@@ -1,134 +1,326 @@
-import React from 'react';
-import AdminLayout from '../../components/admin/AdminLayout';
+import React, { useState, useEffect } from 'react';
+import api from '../../api/api';
 
 function AdminServices() {
-  const services = [
-    {
-      id: 1,
-      name: 'UV Marble Sheet Installation',
-      description: 'Premium glossy finish wall panels',
-      image: 'https://images.unsplash.com/photo-1615873968403-89e068629265?w=200&q=80',
-      featured: true,
-      active: true,
-      updated: 'Oct 10, 2023'
-    },
-    {
-      id: 2,
-      name: 'Premium PVC Paneling',
-      description: 'Durable and stylish wall cladding',
-      image: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=200&q=80',
-      featured: true,
-      active: true,
-      updated: 'Sep 25, 2023'
-    },
-    {
-      id: 3,
-      name: 'Designer False Ceilings',
-      description: 'Modern lighting and ceiling designs',
-      image: null,
-      featured: false,
-      active: true,
-      updated: 'Sep 12, 2023'
-    },
-    {
-      id: 4,
-      name: 'WPC Louver Installation',
-      description: 'Wood plastic composite panels',
-      image: 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=200&q=80',
-      featured: false,
-      active: false,
-      updated: 'Aug 05, 2023'
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [editingService, setEditingService] = useState(null);
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    features: '',
+    icon: 'lucide:grid-3x3',
+    image: null
+  });
+
+  useEffect(() => {
+    fetchServices();
+  }, []);
+
+  const fetchServices = async () => {
+    try {
+      const response = await api.get('services/');
+      setServices(response.data);
+    } catch (err) {
+      console.error("Failed to fetch services", err);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleImageChange = (e) => {
+    setFormData({ ...formData, image: e.target.files[0] });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const data = new FormData();
+    data.append('title', formData.title);
+    data.append('description', formData.description);
+    data.append('features', formData.features);
+    data.append('icon', formData.icon);
+    if (formData.image instanceof File) {
+      data.append('image', formData.image);
+    }
+
+    try {
+      if (editingService) {
+        await api.patch(`services/${editingService.id}/`, data, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+      } else {
+        await api.post('services/', data, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+      }
+      setShowModal(false);
+      setEditingService(null);
+      setFormData({ title: '', description: '', features: '', icon: 'lucide:grid-3x3', image: null });
+      fetchServices();
+    } catch (err) {
+      console.error("Failed to save service", err);
+    }
+  };
+
+  const handleEdit = (service) => {
+    setEditingService(service);
+    setFormData({
+      title: service.title,
+      description: service.description,
+      features: service.features || '',
+      icon: service.icon || 'lucide:grid-3x3',
+      image: service.image
+    });
+    setShowModal(true);
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this service?')) {
+      try {
+        await api.delete(`services/${id}/`);
+        setServices(services.filter(s => s.id !== id));
+      } catch (err) {
+        console.error("Failed to delete service", err);
+      }
+    }
+  };
+
+  const filteredServices = services.filter(s => 
+    s.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <AdminLayout title="Service Management">
-      <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h2 className="text-2xl font-heading font-bold text-foreground">Our Services</h2>
-            <p className="text-muted-foreground text-sm mt-1">Manage the services displayed on the website.</p>
-          </div>
-          <button className="px-4 py-2 bg-primary text-primary-foreground rounded-lg shadow-md hover:bg-secondary font-medium text-sm flex items-center gap-2 transition-colors">
-            <iconify-icon icon="lucide:plus"></iconify-icon>
-            Add New Service
-          </button>
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-heading font-bold text-foreground">Our Services</h2>
+          <p className="text-muted-foreground text-sm mt-1">Manage the services displayed on the website.</p>
         </div>
+        <button 
+          onClick={() => { setEditingService(null); setFormData({title:'', description:'', features: '', icon: 'lucide:grid-3x3', image:null}); setShowModal(true); }}
+          className="px-6 py-2.5 bg-primary text-primary-foreground rounded-xl shadow-lg hover:bg-primary/90 font-bold text-xs uppercase tracking-widest flex items-center gap-2 transition-all"
+        >
+          <iconify-icon icon="lucide:plus" class="text-lg"></iconify-icon>
+          Add New Service
+        </button>
+      </div>
 
-        <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
-          <div className="p-4 border-b border-border bg-muted/30">
-            <div className="relative w-full sm:w-80">
-              <iconify-icon icon="lucide:search" class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"></iconify-icon>
-              <input 
-                type="text" 
-                placeholder="Search services..." 
-                className="w-full pl-9 pr-4 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary" 
-              />
-            </div>
+      <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
+        <div className="p-4 border-b border-border bg-muted/30">
+          <div className="relative w-full sm:w-80">
+            <iconify-icon icon="lucide:search" class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"></iconify-icon>
+            <input 
+              type="text" 
+              placeholder="Search services..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-9 pr-4 py-2 bg-background border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all" 
+            />
           </div>
-          
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm whitespace-nowrap">
-              <thead className="bg-muted/50 text-muted-foreground border-b border-border">
+        </div>
+        
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm whitespace-nowrap">
+            <thead className="bg-muted/50 text-muted-foreground border-b border-border">
+              <tr>
+                <th className="px-6 py-4 font-bold uppercase tracking-widest text-[10px]">Icon/Image</th>
+                <th className="px-6 py-4 font-bold uppercase tracking-widest text-[10px]">Service Title</th>
+                <th className="px-6 py-4 font-bold uppercase tracking-widest text-[10px]">Created At</th>
+                <th className="px-6 py-4 font-bold uppercase tracking-widest text-[10px] text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {loading ? (
                 <tr>
-                  <th className="px-6 py-4 font-medium w-24">Image</th>
-                  <th className="px-6 py-4 font-medium">Service Name</th>
-                  <th className="px-6 py-4 font-medium">Featured</th>
-                  <th className="px-6 py-4 font-medium">Active</th>
-                  <th className="px-6 py-4 font-medium">Last Updated</th>
-                  <th className="px-6 py-4 font-medium text-right">Actions</th>
+                  <td colSpan="4" className="px-6 py-12 text-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {services.map((service) => (
-                  <tr key={service.id} className="hover:bg-muted/30 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="w-16 h-12 rounded-lg bg-muted overflow-hidden flex items-center justify-center">
+              ) : filteredServices.length > 0 ? filteredServices.map((service) => (
+                <tr key={service.id} className="hover:bg-muted/30 transition-colors">
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20 shrink-0">
+                        <iconify-icon icon={service.icon || 'lucide:grid-3x3'} class="text-xl"></iconify-icon>
+                      </div>
+                      <div className="w-14 h-10 rounded-lg bg-muted overflow-hidden border border-border shrink-0">
                         {service.image ? (
-                          <img src={service.image} className="w-full h-full object-cover" alt={service.name} />
+                          <img src={service.image} className="w-full h-full object-cover" alt={service.title} />
                         ) : (
                           <iconify-icon icon="lucide:image" class="text-xl text-muted-foreground"></iconify-icon>
                         )}
                       </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <p className="font-semibold text-foreground">{service.name}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">{service.description}</p>
-                    </td>
-                    <td className="px-6 py-4">
-                      <iconify-icon 
-                        icon="lucide:star" 
-                        class={`text-lg ${service.featured ? 'text-secondary fill-secondary' : 'text-muted-foreground'}`}
-                      ></iconify-icon>
-                    </td>
-                    <td className="px-6 py-4">
-                      <label className="flex items-center cursor-pointer">
-                        <div className="relative">
-                          <input type="checkbox" className="sr-only" checked={service.active} readOnly />
-                          <div className={`block ${service.active ? 'bg-primary' : 'bg-muted'} w-8 h-5 rounded-full transition-colors`}></div>
-                          <div className={`dot absolute left-1 top-1 bg-white w-3 h-3 rounded-full transition-transform ${service.active ? 'translate-x-3' : ''}`}></div>
-                        </div>
-                      </label>
-                    </td>
-                    <td className="px-6 py-4 text-muted-foreground">{service.updated}</td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button className="p-1.5 text-muted-foreground hover:text-primary transition-colors bg-background rounded border border-border">
-                          <iconify-icon icon="lucide:pencil"></iconify-icon>
-                        </button>
-                        <button className="p-1.5 text-muted-foreground hover:text-destructive transition-colors bg-background rounded border border-border">
-                          <iconify-icon icon="lucide:trash-2"></iconify-icon>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <p className="font-bold text-foreground">{service.title}</p>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-widest line-clamp-1 max-w-[200px] mt-0.5">
+                      {service.description}
+                    </p>
+                  </td>
+                  <td className="px-6 py-4 text-xs text-muted-foreground uppercase tracking-wider">
+                    {new Date(service.created_at).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <button 
+                        onClick={() => handleEdit(service)}
+                        className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors border border-transparent hover:border-primary/20"
+                      >
+                        <iconify-icon icon="lucide:pencil" class="text-lg"></iconify-icon>
+                      </button>
+                      <button 
+                        onClick={() => handleDelete(service.id)}
+                        className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors border border-transparent hover:border-destructive/20"
+                      >
+                        <iconify-icon icon="lucide:trash-2" class="text-lg"></iconify-icon>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              )) : (
+                <tr>
+                  <td colSpan="4" className="px-6 py-12 text-center text-muted-foreground italic">
+                    No services found. Add your first service to get started!
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
-    </AdminLayout>
+
+      {/* Add/Edit Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={() => setShowModal(false)}></div>
+          <div className="relative w-full max-w-2xl bg-card rounded-2xl shadow-2xl animate-scale-in border border-border overflow-hidden max-h-[90vh] flex flex-col">
+            <div className="p-6 border-b border-border flex items-center justify-between">
+              <h3 className="text-xl font-bold text-foreground">{editingService ? 'Edit Service' : 'Add New Service'}</h3>
+              <button onClick={() => setShowModal(false)} className="text-muted-foreground hover:text-foreground transition-colors">
+                <iconify-icon icon="lucide:x" class="text-xl"></iconify-icon>
+              </button>
+            </div>
+            
+            <form onSubmit={handleSubmit} className="p-6 space-y-5 overflow-y-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-[10px] font-bold text-muted-foreground mb-1.5 uppercase tracking-widest ml-1">Service Title</label>
+                  <input 
+                    type="text" 
+                    name="title"
+                    required
+                    value={formData.title}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 bg-muted border border-border rounded-xl text-foreground focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                    placeholder="e.g. UV Marble Sheet Installation"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-muted-foreground mb-1.5 uppercase tracking-widest ml-1">Icon (Iconify Name)</label>
+                  <div className="flex gap-2">
+                    <input 
+                      type="text" 
+                      name="icon"
+                      required
+                      value={formData.icon}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 bg-muted border border-border rounded-xl text-foreground focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                      placeholder="e.g. lucide:grid-3x3"
+                    />
+                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0 border border-primary/20">
+                      <iconify-icon icon={formData.icon}></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-[10px] font-bold text-muted-foreground mb-1.5 uppercase tracking-widest ml-1">Description</label>
+                <textarea 
+                  name="description"
+                  required
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  rows="3"
+                  className="w-full px-4 py-3 bg-muted border border-border rounded-xl text-foreground focus:ring-2 focus:ring-primary/20 outline-none transition-all resize-none"
+                  placeholder="Explain what this service offers..."
+                ></textarea>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-muted-foreground mb-1.5 uppercase tracking-widest ml-1">Features (One per line)</label>
+                <textarea 
+                  name="features"
+                  value={formData.features}
+                  onChange={handleInputChange}
+                  rows="4"
+                  className="w-full px-4 py-3 bg-muted border border-border rounded-xl text-foreground focus:ring-2 focus:ring-primary/20 outline-none transition-all resize-none"
+                  placeholder="Feature 1&#10;Feature 2&#10;Feature 3"
+                ></textarea>
+                <p className="text-[10px] text-muted-foreground mt-1 ml-1 italic">Each line will appear as a bullet point on the services page.</p>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-muted-foreground mb-1.5 uppercase tracking-widest ml-1">Service Image</label>
+                <div className="mt-1 flex items-center gap-4">
+                  <div className="w-32 h-24 rounded-xl bg-muted border-2 border-dashed border-border overflow-hidden flex items-center justify-center shrink-0">
+                    {formData.image ? (
+                      <img 
+                        src={formData.image instanceof File ? URL.createObjectURL(formData.image) : formData.image} 
+                        className="w-full h-full object-cover" 
+                        alt="Preview" 
+                      />
+                    ) : (
+                      <iconify-icon icon="lucide:image-plus" class="text-3xl text-muted-foreground/30"></iconify-icon>
+                    )}
+                  </div>
+                  <div className="flex-grow">
+                    <input 
+                      type="file" 
+                      onChange={handleImageChange}
+                      accept="image/*"
+                      className="hidden" 
+                      id="service-image"
+                    />
+                    <label 
+                      htmlFor="service-image"
+                      className="inline-flex items-center px-4 py-2 bg-background border border-border rounded-lg text-xs font-bold uppercase tracking-widest cursor-pointer hover:bg-muted transition-colors"
+                    >
+                      Choose Image
+                    </label>
+                    <p className="text-[10px] text-muted-foreground mt-2">Recommended: High quality horizontal image</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-4 flex gap-3">
+                <button 
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="flex-1 py-3 border border-border text-foreground font-bold uppercase tracking-widest text-[10px] rounded-xl hover:bg-muted transition-all"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit"
+                  className="flex-1 py-3 bg-primary text-primary-foreground font-bold uppercase tracking-widest text-[10px] rounded-xl hover:bg-primary/90 transition-all shadow-lg"
+                >
+                  {editingService ? 'Update Service' : 'Create Service'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 

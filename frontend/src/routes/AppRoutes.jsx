@@ -9,17 +9,14 @@ import PrivacyPolicy from '../pages/PrivacyPolicy'
 import TermsCondition from '../pages/TermsCondition'
 import ReturnRefund from '../pages/ReturnRefund'
 import Login from '../pages/admin/Login'
-import Dashboard from '../pages/admin/Dashboard'
-import Enquiries from '../pages/admin/Enquiries'
-import AdminPortfolio from '../pages/admin/AdminPortfolio'
-import AdminServices from '../pages/admin/AdminServices'
-import AdminSettings from '../pages/admin/AdminSettings'
-import PlaceholderPage from '../pages/admin/PlaceholderPage'
-import ProtectedRoute from '../components/ProtectedRoute'
+
+// Import Admin Routes component
+import AdminRoutes from './AdminRoutes'
 
 function AppRoutes() {
   return (
     <Routes>
+      {/* Public Routes */}
       <Route path="/" element={<Home />} />
       <Route path="/home" element={<Home />} />
       <Route path="/about" element={<About />} />
@@ -31,21 +28,8 @@ function AppRoutes() {
       <Route path="/return_refund" element={<ReturnRefund />} />
       <Route path="/login" element={<Login />} />
       
-      {/* Protected Admin Routes */}
-      <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-      <Route path="/enquiries" element={<ProtectedRoute><Enquiries /></ProtectedRoute>} />
-      <Route path="/admin/portfolio" element={<ProtectedRoute><AdminPortfolio /></ProtectedRoute>} />
-      <Route path="/admin/services" element={<ProtectedRoute><AdminServices /></ProtectedRoute>} />
-      <Route path="/admin/settings" element={<ProtectedRoute><AdminSettings /></ProtectedRoute>} />
-      
-      {/* Admin Placeholders */}
-      <Route path="/bookings" element={<ProtectedRoute><PlaceholderPage title="Bookings Management" /></ProtectedRoute>} />
-      <Route path="/categories" element={<ProtectedRoute><PlaceholderPage title="Categories Management" /></ProtectedRoute>} />
-      <Route path="/testimonials" element={<ProtectedRoute><PlaceholderPage title="Testimonials Management" /></ProtectedRoute>} />
-      <Route path="/customers" element={<ProtectedRoute><PlaceholderPage title="Customers Management" /></ProtectedRoute>} />
-      <Route path="/admin/pages" element={<ProtectedRoute><PlaceholderPage title="Pages Management" /></ProtectedRoute>} />
-      <Route path="/admin/users" element={<ProtectedRoute><PlaceholderPage title="Users & Admins" /></ProtectedRoute>} />
-      <Route path="/admin/reports" element={<ProtectedRoute><PlaceholderPage title="Reports & Analytics" /></ProtectedRoute>} />
+      {/* Admin Routes (Separated) */}
+      <Route path="/admin/*" element={<AdminRoutes />} />
     </Routes>
   )
 }

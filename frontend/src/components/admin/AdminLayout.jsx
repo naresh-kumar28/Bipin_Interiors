@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
+import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import ThemeToggle from './ThemeToggle';
 import { useAuth } from '../../context/AuthContext';
+import { useAdmin } from '../../context/AdminContext';
 
 const AdminLayout = ({ children, title }) => {
   const { user, logout } = useAuth();
+  const { pendingRequests } = useAdmin();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -27,8 +30,8 @@ const AdminLayout = ({ children, title }) => {
               >
                 <iconify-icon icon="lucide:menu" class="text-2xl"></iconify-icon>
               </button>
-              <h1 className="text-xl font-heading font-semibold text-foreground hidden sm:block">{title}</h1>
-              <h1 className="text-lg font-heading font-semibold text-foreground sm:hidden truncate max-w-[150px]">{title}</h1>
+              <h1 className="text-xl font-heading font-semibold text-foreground hidden sm:block">{title || 'Admin Dashboard'}</h1>
+              <h1 className="text-lg font-heading font-semibold text-foreground sm:hidden truncate max-w-[150px]">{title || 'Admin'}</h1>
             </div>
             
             <div className="flex items-center gap-4 sm:gap-6">
@@ -46,7 +49,11 @@ const AdminLayout = ({ children, title }) => {
                 
                 <button className="text-muted-foreground hover:text-primary transition-colors relative p-2">
                   <iconify-icon icon="lucide:bell" class="text-xl"></iconify-icon>
-                  <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full border-2 border-card"></span>
+                  {pendingRequests > 0 && (
+                    <span className="absolute top-1 right-1 w-4 h-4 bg-destructive text-white text-[9px] font-bold flex items-center justify-center rounded-full border border-card animate-pulse">
+                      {pendingRequests > 99 ? '99+' : pendingRequests}
+                    </span>
+                  )}
                 </button>
               </div>
               
@@ -79,7 +86,7 @@ const AdminLayout = ({ children, title }) => {
           {/* Main Content */}
           <main className="flex-1 p-4 sm:p-6 lg:p-8">
             <div className="max-w-7xl mx-auto">
-              {children}
+              {children || <Outlet />}
             </div>
           </main>
         </div>

@@ -2,9 +2,11 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { Sofa, Moon, Sun, Menu, User, LogOut, LayoutDashboard, X, ChevronRight } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
+import { useSiteSettings } from '../../context/SiteContext'
 
 function Navbar() {
     const { user, logout } = useAuth();
+    const { settings } = useSiteSettings();
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -51,15 +53,10 @@ function Navbar() {
         });
     };
 
-    const navLinkClass = ({ isActive }) => 
-        isActive 
-            ? "relative text-[13px] uppercase tracking-[0.18em] text-foreground after:absolute after:left-0 after:-bottom-2 after:h-[2px] after:w-full after:bg-amber-500 text-amber-600"
+    const navLinkClass = ({ isActive }) =>
+        isActive
+            ? "relative text-[13px] uppercase tracking-[0.18em] text-foreground after:absolute after:left-0 after:-bottom-2 after:h-[2px] after:w-full after:bg-primary text-primary"
             : "text-[13px] uppercase tracking-[0.18em] text-muted-foreground hover:text-foreground transition-colors";
-
-    const mobileNavLinkClass = ({ isActive }) =>
-        `flex items-center justify-between py-4 border-b border-border text-sm font-bold uppercase tracking-widest transition-colors ${
-            isActive ? 'text-amber-600' : 'text-foreground'
-        }`;
 
     return (
         <>
@@ -68,12 +65,24 @@ function Navbar() {
                 <div className="max-w-7xl mx-auto px-6 lg:px-8">
                     <div className="flex h-[78px] items-center justify-between">
                         <Link to="/" className="flex items-center gap-3 shrink-0">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-full border border-amber-200 bg-amber-500/10 text-amber-600 shadow-sm">
-                                <Sofa className="w-[18px] h-[18px]" />
-                            </div>
+                            {settings?.logo ? (
+                                <img src={settings.logo} alt={settings?.website_name || "Logo"} className="h-10 object-contain" />
+                            ) : (
+                                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-primary/20 bg-primary/10 text-primary shadow-sm">
+                                    <Sofa className="w-[18px] h-[18px]" />
+                                </div>
+                            )}
                             <div className="leading-tight">
                                 <h1 className="text-[22px] font-bold tracking-[0.08em] text-foreground">
-                                    BIPIN <span className="font-bold text-amber-600">DECOR</span>
+                                    {settings?.website_name ? (
+                                        settings.website_name.split(' ').length > 1 ? (
+                                            <>
+                                                {settings.website_name.split(' ')[0]} <span className="font-bold text-primary">{settings.website_name.split(' ').slice(1).join(' ')}</span>
+                                            </>
+                                        ) : settings.website_name
+                                    ) : (
+                                        <>BIPIN <span className="font-bold text-primary">DECOR</span></>
+                                    )}
                                 </h1>
                             </div>
                         </Link>
@@ -82,24 +91,24 @@ function Navbar() {
                             <NavLink to="/" className={navLinkClass}>Home</NavLink>
                             <NavLink to="/about" className={navLinkClass}>About</NavLink>
                             <NavLink to="/services" className={navLinkClass}>Services</NavLink>
-                            <NavLink to="/portfolio" className={navLinkClass}>Portfolio</NavLink>
+                            <NavLink to="/portfolio" className={navLinkClass}>Our Work</NavLink>
                             <NavLink to="/contact" className={navLinkClass}>Contact</NavLink>
                         </nav>
 
                         <div className="flex items-center gap-3">
-                            <button onClick={toggleDarkMode} className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card text-muted-foreground hover:border-amber-300 hover:text-amber-600 transition-all duration-300">
+                            <button onClick={toggleDarkMode} className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card text-muted-foreground hover:border-primary/50 hover:text-primary transition-all duration-300">
                                 {isDarkMode ? <Sun className="w-[18px] h-[18px]" /> : <Moon className="w-[18px] h-[18px]" />}
                             </button>
 
                             {user && (
                                 <div className="relative">
-                                    <button onClick={() => setIsProfileOpen(!isProfileOpen)} className="flex items-center gap-2 px-4 py-2 rounded-full border border-amber-600/20 bg-amber-600/5 text-amber-700 hover:bg-amber-600/10 transition-all font-medium">
+                                    <button onClick={() => setIsProfileOpen(!isProfileOpen)} className="flex items-center gap-2 px-4 py-2 rounded-full border border-primary/20 bg-primary/5 text-primary hover:bg-primary/10 transition-all font-medium">
                                         <User className="w-4 h-4" />
                                         <span className="text-sm">Hi, {user.first_name || user.username}</span>
                                     </button>
                                     {isProfileOpen && (
                                         <div className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-xl shadow-xl py-2 z-50">
-                                            <Link to="/dashboard" className="flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-muted" onClick={() => setIsProfileOpen(false)}>
+                                            <Link to="/admin/dashboard" className="flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-muted" onClick={() => setIsProfileOpen(false)}>
                                                 <LayoutDashboard className="w-4 h-4" /> Dashboard
                                             </Link>
                                             <button onClick={() => { logout(); setIsProfileOpen(false); }} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-destructive hover:bg-destructive/5">
@@ -114,19 +123,31 @@ function Navbar() {
                 </div>
             </header>
 
-            {/* Mobile Header (Standard logo only) */}
+            {/* Mobile Header */}
             <div className="lg:hidden w-full bg-card/80 backdrop-blur-xl border-b border-border py-4 px-6 flex items-center justify-between sticky top-0 z-50">
                 <Link to="/" className="flex items-center gap-3 shrink-0">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full border border-amber-200 bg-amber-500/10 text-amber-600 shadow-sm">
-                        <Sofa className="w-[18px] h-[18px]" />
-                    </div>
+                    {settings?.logo ? (
+                        <img src={settings.logo} alt={settings?.website_name || "Logo"} className="h-10 object-contain" />
+                    ) : (
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full border border-primary/20 bg-primary/10 text-primary shadow-sm">
+                            <Sofa className="w-[18px] h-[18px]" />
+                        </div>
+                    )}
                     <div className="leading-tight">
                         <h1 className="text-[20px] font-bold tracking-[0.08em] text-foreground">
-                            BIPIN <span className="font-bold text-amber-600">DECOR</span>
+                            {settings?.website_name ? (
+                                settings.website_name.split(' ').length > 1 ? (
+                                    <>
+                                        {settings.website_name.split(' ')[0]} <span className="font-bold text-primary">{settings.website_name.split(' ').slice(1).join(' ')}</span>
+                                    </>
+                                ) : settings.website_name
+                            ) : (
+                                <>BIPIN <span className="font-bold text-primary">DECOR</span></>
+                            )}
                         </h1>
                     </div>
                 </Link>
-                <button onClick={toggleDarkMode} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card text-muted-foreground hover:border-amber-300 hover:text-amber-600 transition-all">
+                <button onClick={toggleDarkMode} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card text-muted-foreground hover:border-primary/50 hover:text-primary transition-all">
                     {isDarkMode ? <Sun className="w-[18px] h-[18px]" /> : <Moon className="w-[18px] h-[18px]" />}
                 </button>
             </div>
@@ -134,28 +155,28 @@ function Navbar() {
             {/* Mobile Bottom Tab Bar */}
             <div className={`lg:hidden fixed bottom-6 left-6 right-6 z-[60] transition-all duration-500 transform ${showFloatingButton ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'}`}>
                 <nav className="bg-card/90 backdrop-blur-xl border border-border/50 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex items-center justify-around px-2 py-3">
-                    <NavLink to="/" className={({ isActive }) => `flex flex-col items-center gap-1 transition-all ${isActive ? 'text-amber-600 scale-110' : 'text-muted-foreground'}`}>
+                    <NavLink to="/" className={({ isActive }) => `flex flex-col items-center gap-1 transition-all ${isActive ? 'text-primary scale-110' : 'text-muted-foreground'}`}>
                         <iconify-icon icon="lucide:home" class="text-xl"></iconify-icon>
                         <span className="text-[10px] font-bold uppercase tracking-tighter">Home</span>
                     </NavLink>
-                    
-                    <NavLink to="/services" className={({ isActive }) => `flex flex-col items-center gap-1 transition-all ${isActive ? 'text-amber-600 scale-110' : 'text-muted-foreground'}`}>
+
+                    <NavLink to="/services" className={({ isActive }) => `flex flex-col items-center gap-1 transition-all ${isActive ? 'text-primary scale-110' : 'text-muted-foreground'}`}>
                         <iconify-icon icon="lucide:layers" class="text-xl"></iconify-icon>
                         <span className="text-[10px] font-bold uppercase tracking-tighter">Services</span>
                     </NavLink>
-                    
-                    <NavLink to="/portfolio" className={({ isActive }) => `flex flex-col items-center gap-1 transition-all ${isActive ? 'text-amber-600 scale-110' : 'text-muted-foreground'}`}>
+
+                    <NavLink to="/portfolio" className={({ isActive }) => `flex flex-col items-center gap-1 transition-all ${isActive ? 'text-primary scale-110' : 'text-muted-foreground'}`}>
                         <iconify-icon icon="lucide:image" class="text-xl"></iconify-icon>
-                        <span className="text-[10px] font-bold uppercase tracking-tighter">Work</span>
+                        <span className="text-[10px] font-bold uppercase tracking-tighter">Our Work</span>
                     </NavLink>
-                    
-                    <NavLink to="/contact" className={({ isActive }) => `flex flex-col items-center gap-1 transition-all ${isActive ? 'text-amber-600 scale-110' : 'text-muted-foreground'}`}>
+
+                    <NavLink to="/contact" className={({ isActive }) => `flex flex-col items-center gap-1 transition-all ${isActive ? 'text-primary scale-110' : 'text-muted-foreground'}`}>
                         <iconify-icon icon="lucide:mail" class="text-xl"></iconify-icon>
                         <span className="text-[10px] font-bold uppercase tracking-tighter">Contact</span>
                     </NavLink>
 
                     {user && (
-                        <NavLink to="/dashboard" className={({ isActive }) => `flex flex-col items-center gap-1 transition-all ${isActive ? 'text-amber-600 scale-110' : 'text-muted-foreground'}`}>
+                        <NavLink to="/admin/dashboard" className={({ isActive }) => `flex flex-col items-center gap-1 transition-all ${isActive ? 'text-primary scale-110' : 'text-muted-foreground'}`}>
                             <iconify-icon icon="lucide:layout-dashboard" class="text-xl"></iconify-icon>
                             <span className="text-[10px] font-bold uppercase tracking-tighter">Admin</span>
                         </NavLink>

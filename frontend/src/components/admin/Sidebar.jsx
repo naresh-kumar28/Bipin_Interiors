@@ -1,27 +1,29 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useAdmin } from '../../context/AdminContext';
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const { logout } = useAuth();
+  const { pendingRequests } = useAdmin();
   const location = useLocation();
 
   const menuItems = [
-    { name: 'Dashboard', icon: 'lucide:layout-dashboard', path: '/dashboard' },
-    { name: 'Enquiries', icon: 'lucide:message-circle', path: '/enquiries', badge: '12' },
-    { name: 'Bookings', icon: 'lucide:calendar', path: '/bookings' },
-    { name: 'Services', icon: 'lucide:layers', path: '/admin/services' },
-    { name: 'Portfolio', icon: 'lucide:image', path: '/admin/portfolio' },
-    { name: 'Categories', icon: 'lucide:grid-3x3', path: '/categories' },
-    { name: 'Testimonials', icon: 'lucide:star', path: '/testimonials' },
-    { name: 'Customers', icon: 'lucide:users', path: '/customers' },
+    { name: 'Dashboard', icon: 'lucify:layout-dashboard', path: '/admin/dashboard' },
+    { name: 'Enquiries', icon: 'lucify:message-circle', path: '/admin/enquiries', badge: pendingRequests > 0 ? pendingRequests.toString() : null },
+    { name: 'Bookings', icon: 'lucify:calendar', path: '/admin/bookings' },
+    { name: 'Services', icon: 'lucify:layers', path: '/admin/services' },
+    { name: 'Portfolio', icon: 'lucify:image', path: '/admin/portfolio' },
+    { name: 'Categories', icon: 'lucify:grid-3x3', path: '/admin/categories' },
+    { name: 'Reviews', icon: 'lucify:star', path: '/admin/reviews' },
+    { name: 'Customers', icon: 'lucify:users', path: '/admin/customers' },
   ];
 
   const systemItems = [
-    { name: 'Pages', icon: 'lucide:file-text', path: '/admin/pages' },
-    { name: 'Website Settings', icon: 'lucide:settings', path: '/admin/settings' },
-    { name: 'Users / Admins', icon: 'lucide:shield', path: '/admin/users' },
-    { name: 'Reports', icon: 'lucide:bar-chart-2', path: '/admin/reports' },
+    { name: 'Pages', icon: 'lucify:file-text', path: '/admin/pages' },
+    { name: 'Website Settings', icon: 'lucify:settings', path: '/admin/settings' },
+    { name: 'Users / Admins', icon: 'lucify:shield', path: '/admin/users' },
+    { name: 'Reports', icon: 'lucify:bar-chart-2', path: '/admin/reports' },
   ];
 
   const isActive = (path) => location.pathname === path;
@@ -42,7 +44,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         <div className="h-16 flex items-center px-6 border-b border-border justify-between">
-          <Link to="/dashboard" className="flex items-center gap-2 text-primary" onClick={() => { if (window.innerWidth < 1024) toggleSidebar(); }}>
+          <Link to="/admin/dashboard" className="flex items-center gap-2 text-primary" onClick={() => { if (window.innerWidth < 1024) toggleSidebar(); }}>
             <iconify-icon icon="lucide:sofa" class="text-2xl"></iconify-icon>
             <span className="font-heading font-bold text-lg text-foreground tracking-wide">Bipin Decor</span>
           </Link>
@@ -63,7 +65,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                   : 'text-muted-foreground hover:bg-muted hover:text-foreground'
               }`}
             >
-              <iconify-icon icon={item.icon} class="text-lg"></iconify-icon>
+              <iconify-icon icon={item.icon.replace('lucify', 'lucide')} class="text-lg"></iconify-icon>
               {item.name}
               {item.badge && (
                 <span className="ml-auto bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
@@ -88,7 +90,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                   : 'text-muted-foreground hover:bg-muted hover:text-foreground'
               }`}
             >
-              <iconify-icon icon={item.icon} class="text-lg"></iconify-icon>
+              <iconify-icon icon={item.icon.replace('lucify', 'lucide')} class="text-lg"></iconify-icon>
               {item.name}
             </Link>
           ))}

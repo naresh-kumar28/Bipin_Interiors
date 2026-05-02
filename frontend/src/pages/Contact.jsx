@@ -1,10 +1,14 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { useSiteSettings } from '../context/SiteContext'
 
 function Contact() {
-    // State and event handlers related to the removed form are no longer needed.
-    // The user's request is to replace the form UI with a different UI structure,
-    // so we'll remove the state logic as well for a cleaner component.
+    const { settings } = useSiteSettings();
+
+    // Prepare WhatsApp URL
+    const waNumber = settings?.whatsapp_number?.replace(/\D/g, '') || '15551234567';
+    const waMessage = settings?.whatsapp_message ? encodeURIComponent(settings.whatsapp_message) : '';
+    const waUrl = `https://wa.me/${waNumber}${waMessage ? `?text=${waMessage}` : ''}`;
 
     return (
         <main className="flex-grow flex flex-col w-full">
@@ -64,7 +68,7 @@ function Contact() {
                             {/* Call to Action Buttons */}
                             <div className="relative z-10 flex flex-col sm:flex-row gap-4 w-full justify-center">
                                 <a
-                                    href="https://wa.me/15551234567"
+                                    href={waUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="flex items-center justify-center gap-2 px-6 py-3 bg-[#25D366] text-white font-bold rounded-sm hover:bg-[#20b858] transition-all shadow-md"
@@ -76,7 +80,7 @@ function Contact() {
                                 </a>
 
                                 <a
-                                    href="mailto:hello@bipinDecors.com"
+                                    href={`mailto:${settings?.contact_email || "hello@bipinDecors.com"}`}
                                     className="flex items-center justify-center gap-2 px-6 py-3 bg-background border border-border text-foreground font-semibold rounded-sm hover:bg-card transition-colors"
                                 >
                                     <iconify-icon icon="lucide:mail" className="text-xl"></iconify-icon>
@@ -84,7 +88,7 @@ function Contact() {
                                 </a>
 
                                 <a
-                                    href="tel:+15551234567"
+                                    href={`tel:${settings?.contact_phone?.replace(/\s/g, '') || "+15551234567"}`}
                                     className="flex items-center justify-center gap-2 px-6 py-3 bg-background border border-border text-foreground font-semibold rounded-sm hover:bg-card transition-colors"
                                 >
                                     <iconify-icon icon="lucide:phone" className="text-xl"></iconify-icon>

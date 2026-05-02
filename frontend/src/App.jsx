@@ -1,6 +1,7 @@
 import { useLocation } from 'react-router-dom'
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
+import FloatingWhatsApp from './components/layout/FloatingWhatsApp'
 import AppRoutes from './routes/AppRoutes'
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
         <AppRoutes />
       </main>
       {!hideLayout && <Footer />}
+      {!hideLayout && <FloatingWhatsApp />}
     </>
   )
 }

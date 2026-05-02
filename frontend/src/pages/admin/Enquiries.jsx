@@ -1,195 +1,286 @@
-import React from 'react';
-import AdminLayout from '../../components/admin/AdminLayout';
+import React, { useState, useEffect } from 'react';
+import api from '../../api/api';
+import { useAdmin } from '../../context/AdminContext';
+
+const WhatsAppSVG = ({ className = "w-5 h-5" }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.414 0 .018 5.393 0 12.03c0 2.12.556 4.188 1.613 6.012L0 24l6.117-1.605a11.81 11.81 0 005.925 1.597h.005c6.632 0 12.032-5.391 12.035-12.031a11.817 11.817 0 00-3.517-8.489"/>
+  </svg>
+);
 
 function Enquiries() {
-  const enquiries = [
-    {
-      id: 1,
-      name: 'Amit Sharma',
-      phone: '+91 98765 43210',
-      email: 'amit@example.com',
-      service: 'False Ceiling',
-      source: 'WhatsApp',
-      sourceIcon: 'lucide:phone',
-      sourceClass: 'bg-green-50 text-green-700 border-green-200',
-      date: 'Oct 12, 2023',
-      time: '10:30 AM',
-      status: 'New',
-      statusClass: 'bg-blue-100 text-blue-700'
-    },
-    {
-      id: 2,
-      name: 'Priya Kapoor',
-      phone: '+91 87654 32109',
-      email: 'priya.k@example.com',
-      service: 'PVC Paneling',
-      source: 'Website Form',
-      sourceIcon: 'lucide:globe',
-      sourceClass: 'bg-blue-50 text-blue-700 border-blue-200',
-      date: 'Oct 11, 2023',
-      time: '02:15 PM',
-      status: 'Contacted',
-      statusClass: 'bg-yellow-100 text-yellow-700'
-    },
-    {
-      id: 3,
-      name: 'Rahul Mehta',
-      phone: '+91 76543 21098',
-      email: 'rahul.m@example.com',
-      service: 'UV Marble Sheet',
-      source: 'Phone Call',
-      sourceIcon: 'lucide:phone-call',
-      sourceClass: 'bg-purple-50 text-purple-700 border-purple-200',
-      date: 'Oct 10, 2023',
-      time: '09:45 AM',
-      status: 'In Progress',
-      statusClass: 'bg-purple-100 text-purple-700'
-    },
-    {
-      id: 4,
-      name: 'Sneha Verma',
-      phone: '+91 65432 10987',
-      email: 'sneha.v@example.com',
-      service: 'WPC Louvers',
-      source: 'Website Form',
-      sourceIcon: 'lucide:globe',
-      sourceClass: 'bg-blue-50 text-blue-700 border-blue-200',
-      date: 'Oct 09, 2023',
-      time: '04:20 PM',
-      status: 'Converted',
-      statusClass: 'bg-green-100 text-green-700'
+  const { refreshStats } = useAdmin();
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedRequest, setSelectedRequest] = useState(null);
+
+  useEffect(() => {
+    const fetchRequests = async () => {
+      try {
+        const response = await api.get('project-requests/');
+        setRequests(response.data);
+      } catch (err) {
+        console.error("Failed to fetch requests", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchRequests();
+  }, []);
+
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      await api.patch(`project-requests/${id}/`, { status: newStatus });
+      setRequests(requests.map(r => r.id === id ? { ...r, status: newStatus } : r));
+      refreshStats();
+    } catch (err) {
+      console.error("Failed to update status", err);
     }
-  ];
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm('Delete this request?')) {
+      try {
+        await api.delete(`project-requests/${id}/`);
+        setRequests(requests.filter(r => r.id !== id));
+        if (selectedRequest?.id === id) setSelectedRequest(null);
+        refreshStats();
+      } catch (err) {
+        console.error("Failed to delete request", err);
+      }
+    }
+  };
+
+  const filteredRequests = requests.filter(r => 
+    r.user_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    r.project_title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    r.user_phone.includes(searchTerm)
+  );
+
+  const getStatusColor = (status) => {
+    switch (status.toLowerCase()) {
+      case 'pending': return 'bg-amber-100 text-amber-700 border-amber-200';
+      case 'contacted': return 'bg-blue-100 text-blue-700 border-blue-200';
+      case 'completed': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+      default: return 'bg-slate-100 text-slate-700 border-slate-200';
+    }
+  };
 
   return (
-    <AdminLayout title="Enquiries Management">
-      <div className="space-y-6">
-        {/* Header & Actions */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h2 className="text-2xl font-heading font-bold text-foreground">Customer Enquiries</h2>
-            <p className="text-muted-foreground text-sm mt-1">Manage and track all leads and messages.</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <button className="px-4 py-2 bg-card border border-border text-foreground rounded-lg shadow-sm hover:bg-muted font-medium text-sm flex items-center gap-2 transition-colors">
-              <iconify-icon icon="lucide:download"></iconify-icon>
-              Export CSV
-            </button>
-            <button className="px-4 py-2 bg-primary text-primary-foreground rounded-lg shadow-md hover:bg-secondary font-medium text-sm flex items-center gap-2 transition-colors">
-              <iconify-icon icon="lucide:plus"></iconify-icon>
-              Add Enquiry
-            </button>
-          </div>
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-heading font-bold text-foreground">Customer Requests</h2>
+          <p className="text-muted-foreground text-sm mt-1">Manage leads from the Portfolio "Request this Design" feature.</p>
         </div>
+      </div>
 
-        {/* Filters Bar */}
-        <div className="bg-card rounded-xl border border-border p-4 shadow-sm flex flex-col md:flex-row gap-4 items-center justify-between">
-          <div className="relative w-full md:w-80">
-            <iconify-icon icon="lucide:search" class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"></iconify-icon>
-            <input 
-              type="text" 
-              placeholder="Search name, phone, or email..." 
-              className="w-full pl-9 pr-4 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary" 
-            />
-          </div>
-          
-          <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-            <select className="px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary min-w-[140px]">
-              <option value="">All Services</option>
-              <option value="uv">UV Marble Sheet</option>
-              <option value="pvc">PVC Paneling</option>
-              <option value="ceiling">False Ceiling</option>
-              <option value="louver">WPC Louvers</option>
-            </select>
-            
-            <select className="px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary min-w-[140px]">
-              <option value="">All Statuses</option>
-              <option value="new">New</option>
-              <option value="contacted">Contacted</option>
-              <option value="progress">In Progress</option>
-              <option value="converted">Converted</option>
-              <option value="rejected">Rejected</option>
-            </select>
-            
-            <button className="p-2 bg-background border border-border text-muted-foreground rounded-lg hover:text-foreground hover:bg-muted transition-colors" title="Filter by Date">
-              <iconify-icon icon="lucide:calendar"></iconify-icon>
-            </button>
-          </div>
+      <div className="bg-card rounded-xl border border-border p-4 shadow-sm">
+        <div className="relative w-full md:w-80">
+          <iconify-icon icon="lucide:search" class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"></iconify-icon>
+          <input 
+            type="text" 
+            placeholder="Search name, phone, or design..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-9 pr-4 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary transition-all" 
+          />
         </div>
+      </div>
 
-        {/* Data Table */}
-        <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm whitespace-nowrap">
-              <thead className="bg-muted/50 text-muted-foreground border-b border-border">
+      <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm whitespace-nowrap">
+            <thead className="bg-muted/50 text-muted-foreground border-b border-border">
+              <tr>
+                <th className="px-6 py-4 font-medium uppercase tracking-wider text-[10px]">Customer Details</th>
+                <th className="px-6 py-4 font-medium uppercase tracking-wider text-[10px]">Requested Design</th>
+                <th className="px-6 py-4 font-medium uppercase tracking-wider text-[10px] text-center">Message</th>
+                <th className="px-6 py-4 font-medium uppercase tracking-wider text-[10px]">Date</th>
+                <th className="px-6 py-4 font-medium uppercase tracking-wider text-[10px]">Status</th>
+                <th className="px-6 py-4 font-medium uppercase tracking-wider text-[10px] text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {loading ? (
                 <tr>
-                  <th className="px-6 py-4 font-medium w-10">
-                    <input type="checkbox" className="rounded border-border text-primary focus:ring-primary" />
-                  </th>
-                  <th className="px-6 py-4 font-medium">Customer Details</th>
-                  <th className="px-6 py-4 font-medium">Service Interested</th>
-                  <th className="px-6 py-4 font-medium">Source</th>
-                  <th className="px-6 py-4 font-medium">Date</th>
-                  <th className="px-6 py-4 font-medium">Status</th>
-                  <th className="px-6 py-4 font-medium text-right">Actions</th>
+                  <td colSpan="6" className="px-6 py-20 text-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {enquiries.map((enquiry) => (
-                  <tr key={enquiry.id} className="hover:bg-muted/30 transition-colors">
+              ) : filteredRequests.length > 0 ? (
+                filteredRequests.map((req) => (
+                  <tr key={req.id} className="hover:bg-muted/30 transition-colors">
                     <td className="px-6 py-4">
-                      <input type="checkbox" className="rounded border-border text-primary focus:ring-primary" />
+                      <p className="font-bold text-foreground">{req.user_name}</p>
+                      <p className="text-[10px] text-muted-foreground uppercase tracking-tight">{req.user_phone}</p>
+                      <p className="text-[10px] text-muted-foreground">{req.user_email}</p>
                     </td>
                     <td className="px-6 py-4">
-                      <p className="font-semibold text-foreground">{enquiry.name}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">{enquiry.phone}</p>
-                      <p className="text-xs text-muted-foreground">{enquiry.email}</p>
+                      <div className="flex items-center gap-3">
+                        {req.project_image && (
+                          <a 
+                            href={req.project_image} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="w-12 h-12 rounded-lg overflow-hidden border border-border flex-shrink-0 hover:ring-2 hover:ring-primary transition-all shadow-sm"
+                          >
+                            <img src={req.project_image} alt={req.project_title} className="w-full h-full object-cover" />
+                          </a>
+                        )}
+                        <a 
+                          href={req.project_image} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="font-medium text-foreground hover:text-primary transition-colors"
+                        >
+                          {req.project_title}
+                        </a>
+                      </div>
                     </td>
-                    <td className="px-6 py-4 text-foreground font-medium">{enquiry.service}</td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border ${enquiry.sourceClass}`}>
-                        <iconify-icon icon={enquiry.sourceIcon}></iconify-icon> {enquiry.source}
-                      </span>
+                    <td className="px-6 py-4 text-center">
+                      <button 
+                          onClick={() => setSelectedRequest(req)}
+                          className="w-9 h-9 rounded-full bg-primary/5 text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-all border border-primary/10 group mx-auto"
+                          title="View Message"
+                      >
+                          <iconify-icon icon="lucide:eye" class="text-lg"></iconify-icon>
+                      </button>
                     </td>
-                    <td className="px-6 py-4 text-muted-foreground">{enquiry.date}<br /><span className="text-xs">{enquiry.time}</span></td>
+                    <td className="px-6 py-4 text-xs text-muted-foreground">
+                      {new Date(req.created_at).toLocaleDateString()}
+                    </td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${enquiry.statusClass}`}>{enquiry.status}</span>
+                      <select 
+                        value={req.status}
+                        onChange={(e) => handleStatusChange(req.id, e.target.value)}
+                        className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase border focus:outline-none ${getStatusColor(req.status)}`}
+                      >
+                        <option value="Pending">Pending</option>
+                        <option value="Contacted">Contacted</option>
+                        <option value="Completed">Completed</option>
+                      </select>
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <button className="p-1.5 text-muted-foreground hover:text-primary transition-colors bg-background rounded border border-border" title="WhatsApp">
-                          <iconify-icon icon="lucide:message-circle"></iconify-icon>
-                        </button>
-                        <button className="p-1.5 text-muted-foreground hover:text-primary transition-colors bg-background rounded border border-border" title="View Details">
-                          <iconify-icon icon="lucide:eye"></iconify-icon>
-                        </button>
-                        <button className="p-1.5 text-muted-foreground hover:text-destructive transition-colors bg-background rounded border border-border" title="Delete">
+                        <a 
+                          href={`https://wa.me/${req.user_phone.replace(/[^0-9]/g, '')}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="p-2 text-emerald-500 hover:bg-emerald-50 rounded-lg transition-colors border border-emerald-100 flex items-center justify-center" 
+                          title="WhatsApp"
+                        >
+                          <WhatsAppSVG className="w-4 h-4" />
+                        </a>
+                        <button 
+                          onClick={() => handleDelete(req.id)}
+                          className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors border border-destructive/10" 
+                          title="Delete"
+                        >
                           <iconify-icon icon="lucide:trash-2"></iconify-icon>
                         </button>
                       </div>
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          
-          {/* Pagination */}
-          <div className="px-6 py-4 border-t border-border flex items-center justify-between bg-card">
-            <span className="text-sm text-muted-foreground">Showing 1 to 4 of 124 entries</span>
-            <div className="flex items-center gap-1">
-              <button className="px-3 py-1 border border-border rounded text-sm text-muted-foreground hover:bg-muted disabled:opacity-50" disabled>Prev</button>
-              <button className="px-3 py-1 border border-primary bg-primary text-primary-foreground rounded text-sm font-medium">1</button>
-              <button className="px-3 py-1 border border-border rounded text-sm text-foreground hover:bg-muted">2</button>
-              <button className="px-3 py-1 border border-border rounded text-sm text-foreground hover:bg-muted">3</button>
-              <span className="px-2 text-muted-foreground">...</span>
-              <button className="px-3 py-1 border border-border rounded text-sm text-foreground hover:bg-muted">12</button>
-              <button className="px-3 py-1 border border-border rounded text-sm text-foreground hover:bg-muted">Next</button>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6" className="px-6 py-20 text-center text-muted-foreground">
+                    No requests found matching your search.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Request Details Modal */}
+      {selectedRequest && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setSelectedRequest(null)}></div>
+          <div className="relative w-full max-w-lg bg-card rounded-2xl shadow-2xl animate-scale-in border border-border overflow-hidden">
+            <div className="p-6 border-b border-border flex items-center justify-between">
+              <h3 className="text-xl font-bold text-foreground">Request Details</h3>
+              <button onClick={() => setSelectedRequest(null)} className="text-muted-foreground hover:text-foreground transition-colors">
+                <iconify-icon icon="lucide:x" class="text-xl"></iconify-icon>
+              </button>
+            </div>
+            
+            <div className="p-6 space-y-6">
+              <div className="flex items-start justify-between">
+                <div>
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block mb-1">Customer</label>
+                  <p className="text-lg font-bold text-foreground">{selectedRequest.user_name}</p>
+                  <p className="text-sm text-muted-foreground">{selectedRequest.user_phone}</p>
+                  <p className="text-sm text-muted-foreground">{selectedRequest.user_email}</p>
+                </div>
+                <div className="text-right">
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block mb-1">Status</label>
+                  <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase border ${getStatusColor(selectedRequest.status)}`}>
+                    {selectedRequest.status}
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block mb-2">Requested Design</label>
+                <div className="flex items-center gap-4 p-3 bg-muted/30 rounded-xl border border-border">
+                  {selectedRequest.project_image && (
+                    <a 
+                      href={selectedRequest.project_image} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="w-16 h-16 rounded-lg overflow-hidden border border-border flex-shrink-0"
+                    >
+                      <img src={selectedRequest.project_image} alt={selectedRequest.project_title} className="w-full h-full object-cover" />
+                    </a>
+                  )}
+                  <div className="flex flex-col">
+                    <p className="text-md font-semibold text-foreground">{selectedRequest.project_title}</p>
+                    <a 
+                      href={selectedRequest.project_image} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-xs text-primary font-bold hover:underline mt-1 flex items-center gap-1"
+                    >
+                      <iconify-icon icon="lucide:external-link"></iconify-icon>
+                      View Original Design
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4 bg-muted/50 rounded-xl border border-border">
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block mb-2">Message from Customer</label>
+                <p className="text-sm text-foreground leading-relaxed italic">
+                  {selectedRequest.message ? `"${selectedRequest.message}"` : "The customer did not leave a specific message."}
+                </p>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <a 
+                  href={`https://wa.me/${selectedRequest.user_phone.replace(/[^0-9]/g, '')}`} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex-1 py-3 bg-emerald-500 text-white font-bold uppercase tracking-widest text-xs rounded-xl hover:bg-emerald-600 transition-all shadow-lg flex items-center justify-center gap-2"
+                >
+                  <WhatsAppSVG className="w-5 h-5" />
+                  Reply on WhatsApp
+                </a>
+                <button 
+                  onClick={() => handleDelete(selectedRequest.id)}
+                  className="px-6 py-3 bg-destructive/10 text-destructive font-bold uppercase tracking-widest text-xs rounded-xl hover:bg-destructive hover:text-white transition-all border border-destructive/20"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </AdminLayout>
+      )}
+    </div>
   );
 }
 

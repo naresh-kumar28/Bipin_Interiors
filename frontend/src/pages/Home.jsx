@@ -1,6 +1,8 @@
-import React from 'react'
-
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom';
+import api from '../api/api';
+import CategoryCard from '../components/CategoryCard';
+import BookingModal from '../components/BookingModal';
 
 import { 
     livingRoom, bedroom, kitchen, office, lobby, hall,
@@ -10,6 +12,37 @@ import {
 import heroVideo from "../assets/video.mp4";
 
 function Home() {
+    const [categories, setCategories] = useState([]);
+    const [services, setServices] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [catsRes, servicesRes] = await Promise.all([
+                    api.get('categories/'),
+                    api.get('services/')
+                ]);
+                setCategories(catsRes.data);
+                setServices(servicesRes.data);
+            } catch (err) {
+                console.error("Failed to fetch data", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
+
+    // Truncate words helper
+    const truncateWords = (text, limit) => {
+        if (!text) return "";
+        const words = text.split(" ");
+        if (words.length <= limit) return text;
+        return words.slice(0, limit).join(" ") + "...";
+    };
+
     return (
         <main className="flex-grow flex flex-col w-full">
 
@@ -56,378 +89,91 @@ function Home() {
                     <div className="flex flex-col sm:flex-row gap-5 justify-center items-center">
 
                         {/* Primary Button */}
-                        <a href="#contact"
-                            className="group inline-flex items-center gap-3 px-8 py-3 border border-amber-400 text-amber-400 hover:bg-amber-400 hover:text-black transition-all duration-300 text-xs tracking-[0.2em] uppercase">
+                        <button 
+                            onClick={() => setIsBookingModalOpen(true)}
+                            className="group inline-flex items-center gap-3 px-8 py-3 border border-amber-400 text-amber-400 hover:bg-amber-400 hover:text-black transition-all duration-300 text-xs tracking-[0.2em] uppercase"
+                        >
                             Start Your Project
                             <iconify-icon icon="lucide:arrow-right"
                                 className="text-sm transition-transform duration-300 group-hover:translate-x-1"></iconify-icon>
-                        </a>
-
-                        {/* Secondary Button */}
-                        {/* <a href="#services"
-                            className="inline-flex items-center gap-2 text-white text-xs tracking-[0.2em] uppercase border-b border-card/40 hover:border-card transition-all duration-300">
-                            View Portfolio
-                        </a> */}
+                        </button>
 
                     </div>
 
                 </div>
             </section>
 
-            {/* NEW Categories Section */}
-            <section className="py-16 md:py-24 px-6 bg-background">
-                <div className="max-w-7xl mx-auto">
-                    <div className="flex items-end justify-between mb-7">
-                        <div>
-                            <span
-                                className="text-primary text-sm font-bold uppercase tracking-widest mb-1 block animate-fade-in">
-                                Explore Spaces
-                            </span>
-                            <h2 className="text-3xl md:text-5xl font-heading font-bold text-foreground leading-tight">
-                                Design by Category
-                            </h2>
+            {/* Categories Section */}
+            {categories.length > 0 && (
+                <section className="py-16 md:py-24 px-6 bg-background">
+                    <div className="max-w-7xl mx-auto">
+                        <div className="flex items-end justify-between mb-7">
+                            <div>
+                                <span
+                                    className="text-primary text-sm font-bold uppercase tracking-widest mb-1 block animate-fade-in">
+                                    Explore Spaces
+                                </span>
+                                <h2 className="text-3xl md:text-5xl font-heading font-bold text-foreground leading-tight">
+                                    Design by Category
+                                </h2>
+                            </div>
                         </div>
-                        <div className="hidden md:flex gap-4">
-                            <button
-                                className="w-12 h-12 rounded-full border border-border flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 focus:ring-2 focus:ring-primary focus:ring-offset-2">
-                                <iconify-icon icon="lucide:arrow-left" className="text-lg"></iconify-icon>
-                            </button>
-                            <button
-                                className="w-12 h-12 rounded-full border border-border flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 focus:ring-2 focus:ring-primary focus:ring-offset-2">
-                                <iconify-icon icon="lucide:arrow-right" className="text-lg"></iconify-icon>
-                            </button>
+
+                        <div
+                            className="flex overflow-x-auto gap-8 pb-10 -mb-10 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] group/carousel">
+
+                            {categories.map((category) => (
+                                <CategoryCard key={category.id} category={category} />
+                            ))}
                         </div>
                     </div>
+                </section>
+            )}
 
-                    <div
-                        className="flex overflow-x-auto gap-8 pb-10 -mb-10 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] group/carousel">
-
-                        <a href="#"
-                            className="group/card relative w-[280px] md:w-[360px] aspect-square rounded-2xl overflow-hidden snap-start shrink-0 cursor-pointer transition-all duration-500">
-                            <img src={livingRoom}
-                                alt="Living Room"
-                                className="w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent">
-                            </div>
-                            <div
-                                className="absolute bottom-6 left-6 right-6 transition-transform duration-500 group-hover/card:-translate-y-1">
-                                <h3 className="text-white text-2xl font-heading font-bold mb-1.5">Living Room</h3>
-                                <p
-                                    className="text-white/80 text-sm flex items-center gap-2 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 translate-y-2 group-hover/card:translate-y-0">
-                                    Explore <iconify-icon icon="lucide:arrow-right" className="text-xs"></iconify-icon>
-                                </p>
-                            </div>
-                        </a>
-
-                        <a href="#"
-                            className="group/card relative w-[280px] md:w-[360px] aspect-square rounded-2xl overflow-hidden snap-start shrink-0 cursor-pointer  transition-all duration-500">
-                            <img src={bedroom}
-                                alt="Bedroom"
-                                className="w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent">
-                            </div>
-                            <div
-                                className="absolute bottom-6 left-6 right-6 transition-transform duration-500 group-hover/card:-translate-y-1">
-                                <h3 className="text-white text-2xl font-heading font-bold mb-1.5">Bedroom</h3>
-                                <p
-                                    className="text-white/80 text-sm flex items-center gap-2 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 translate-y-2 group-hover/card:translate-y-0">
-                                    Explore <iconify-icon icon="lucide:arrow-right" className="text-xs"></iconify-icon>
-                                </p>
-                            </div>
-                        </a>
-
-                        <a href="#"
-                            className="group/card relative w-[280px] md:w-[360px] aspect-square rounded-2xl overflow-hidden snap-start shrink-0 cursor-pointer  transition-all duration-500">
-                            <img src={kitchen} alt="Kitchen"
-                                className="w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent">
-                            </div>
-                            <div
-                                className="absolute bottom-6 left-6 right-6 transition-transform duration-500 group-hover/card:-translate-y-1">
-                                <h3 className="text-white text-2xl font-heading font-bold mb-1.5">Kitchen</h3>
-                                <p
-                                    className="text-white/80 text-sm flex items-center gap-2 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 translate-y-2 group-hover/card:translate-y-0">
-                                    Explore <iconify-icon icon="lucide:arrow-right" className="text-xs"></iconify-icon>
-                                </p>
-                            </div>
-                        </a>
-
-                        <a href="#"
-                            className="group/card relative w-[280px] md:w-[360px] aspect-square rounded-2xl overflow-hidden snap-start shrink-0 cursor-pointer  transition-all duration-500">
-                            <img src={office}
-                                alt="Office"
-                                className="w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent">
-                            </div>
-                            <div
-                                className="absolute bottom-6 left-6 right-6 transition-transform duration-500 group-hover/card:-translate-y-1">
-                                <h3 className="text-white text-2xl font-heading font-bold mb-1.5">Office</h3>
-                                <p
-                                    className="text-white/80 text-sm flex items-center gap-2 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 translate-y-2 group-hover/card:translate-y-0">
-                                    Explore <iconify-icon icon="lucide:arrow-right" className="text-xs"></iconify-icon>
-                                </p>
-                            </div>
-                        </a>
-
-                        <a href="#"
-                            className="group/card relative w-[280px] md:w-[360px] aspect-square rounded-2xl overflow-hidden snap-start shrink-0 cursor-pointer  transition-all duration-500">
-                            <img src={lobby}
-                                alt="Lobby"
-                                className="w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent">
-                            </div>
-                            <div
-                                className="absolute bottom-6 left-6 right-6 transition-transform duration-500 group-hover/card:-translate-y-1">
-                                <h3 className="text-white text-2xl font-heading font-bold mb-1.5">Lobby</h3>
-                                <p
-                                    className="text-white/80 text-sm flex items-center gap-2 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 translate-y-2 group-hover/card:translate-y-0">
-                                    Explore <iconify-icon icon="lucide:arrow-right" className="text-xs"></iconify-icon>
-                                </p>
-                            </div>
-                        </a>
-
-                        <a href="#"
-                            className="group/card relative w-[280px] md:w-[360px] aspect-square rounded-2xl overflow-hidden snap-start shrink-0 cursor-pointer  transition-all duration-500">
-                            <img src={hall}
-                                alt="Hall"
-                                className="w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent">
-                            </div>
-                            <div
-                                className="absolute bottom-6 left-6 right-6 transition-transform duration-500 group-hover/card:-translate-y-1">
-                                <h3 className="text-white text-2xl font-heading font-bold mb-1.5">Hall</h3>
-                                <p
-                                    className="text-white/80 text-sm flex items-center gap-2 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 translate-y-2 group-hover/card:translate-y-0">
-                                    Explore <iconify-icon icon="lucide:arrow-right" className="text-xs"></iconify-icon>
-                                </p>
-                            </div>
-                        </a>
-
-                    </div>
-                </div>
-            </section>
-
-            {/* Redesigned Services Section */}
-            <section className="py-5 px-6 bg-muted/30">
+            {/* Services Section */}
+            <section className="py-16 md:py-24 px-6 bg-muted/30">
                 <div className="max-w-7xl mx-auto">
-                    <div className=" mb-10">
+                    <div className="mb-12">
                         <span className="text-primary text-sm font-bold uppercase tracking-widest">Our Expertise</span>
-                        <h2 className="text-3xl md:text-5xl font-heading font-bold mt-3 text-foreground">Bipin Decor
-                            Services
-                        </h2>
-
+                        <h2 className="text-3xl md:text-5xl font-heading font-bold mt-3 text-foreground">Bipin Decor Services</h2>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-16">
-                        {/* Service Card 1 */}
-                        <div
-                            className="group bg-card rounded-2xl shadow-sm hover:shadow-xl transition-all border border-border overflow-hidden flex flex-col">
-                            <div className="relative h-64 overflow-hidden">
-                                <img src={uvMarbleSheet}
-                                    alt="UV Marble Sheet"
-                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+                        {services.length > 0 ? services.slice(0, 6).map((service) => (
+                            <div
+                                key={service.id}
+                                className="group bg-card rounded-2xl shadow-sm hover:shadow-xl transition-all border border-border overflow-hidden flex flex-col h-full">
+                                <div className="relative h-48 sm:h-56 overflow-hidden">
+                                    <img src={service.image}
+                                        alt={service.title}
+                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                                </div>
+                                <div className="p-6 flex flex-col flex-grow">
+                                    <h3 className="text-2xl font-bold mb-2">{service.title}</h3>
+                                    <p className="text-muted-foreground text-sm leading-relaxed mb-6 flex-grow">
+                                        {truncateWords(service.description, 25)}
+                                    </p>
+                                    <Link to={`/services#service-${service.id}`}
+                                        className="inline-flex items-center justify-center px-6 py-2.5 border border-primary/20 text-primary font-semibold text-sm rounded-sm hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all w-full">
+                                        View Service
+                                    </Link>
+                                </div>
                             </div>
-                            <div className="p-8 flex flex-col flex-grow">
-                                <h3 className="text-2xl font-heading font-bold mb-3">UV Marble Sheet</h3>
-                                <p className="text-muted-foreground text-sm leading-relaxed mb-8 flex-grow">
-                                    High-gloss, durable UV marble sheets providing a luxurious stone finish without the
-                                    heavy cost and maintenance.
-                                </p>
-                                <a href="#"
-                                    className="inline-flex items-center justify-center px-6 py-3 border border-border text-foreground font-semibold text-sm rounded-sm hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors w-full">
-                                    View Service
-                                </a>
+                        )) : (
+                            <div className="col-span-full text-center py-10">
+                                <p className="text-muted-foreground italic">Adding our premium services soon...</p>
                             </div>
-                        </div>
-
-                        {/* Service Card 2 */}
-                        <div
-                            className="group bg-card rounded-2xl shadow-sm hover:shadow-xl transition-all border border-border overflow-hidden flex flex-col">
-                            <div className="relative h-64 overflow-hidden">
-                                <img src={pvcPaneling}
-                                    alt="PVC Paneling"
-                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                            </div>
-                            <div className="p-8 flex flex-col flex-grow">
-                                <h3 className="text-2xl font-heading font-bold mb-3">PVC Paneling</h3>
-                                <p className="text-muted-foreground text-sm leading-relaxed mb-8 flex-grow">
-                                    Moisture-resistant, elegant PVC panels perfect for modern walls and ceilings with
-                                    endless design possibilities.
-                                </p>
-                                <a href="#"
-                                    className="inline-flex items-center justify-center px-6 py-3 border border-border text-foreground font-semibold text-sm rounded-sm hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors w-full">
-                                    View Service
-                                </a>
-                            </div>
-                        </div>
-
-                        {/* Service Card 3 */}
-                        <div
-                            className="group bg-card rounded-2xl shadow-sm hover:shadow-xl transition-all border border-border overflow-hidden flex flex-col">
-                            <div className="relative h-64 overflow-hidden">
-                                <img src={falseCeiling} alt="False Ceiling"
-                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                            </div>
-                            <div className="p-8 flex flex-col flex-grow">
-                                <h3 className="text-2xl font-heading font-bold mb-3">False Ceiling</h3>
-                                <p className="text-muted-foreground text-sm leading-relaxed mb-8 flex-grow">
-                                    Intricate false ceiling designs that enhance lighting, conceal wiring, and add
-                                    architectural depth to any room.
-                                </p>
-                                <a href="#"
-                                    className="inline-flex items-center justify-center px-6 py-3 border border-border text-foreground font-semibold text-sm rounded-sm hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors w-full">
-                                    View Service
-                                </a>
-                            </div>
-                        </div>
-
-                        {/* Service Card 4 */}
-                        <div
-                            className="group bg-card rounded-2xl shadow-sm hover:shadow-xl transition-all border border-border overflow-hidden flex flex-col">
-                            <div className="relative h-64 overflow-hidden">
-                                <img src={wpcLouvers}
-                                    alt="WPC Louvers"
-                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                            </div>
-                            <div className="p-8 flex flex-col flex-grow">
-                                <h3 className="text-2xl font-heading font-bold mb-3">WPC Louvers</h3>
-                                <p className="text-muted-foreground text-sm leading-relaxed mb-8 flex-grow">
-                                    Contemporary wooden-finish louvers that bring warmth, texture, and sophisticated
-                                    linear patterns to your spaces.
-                                </p>
-                                <a href="#"
-                                    className="inline-flex items-center justify-center px-6 py-3 border border-border text-foreground font-semibold text-sm rounded-sm hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors w-full">
-                                    View Service
-                                </a>
-                            </div>
-                        </div>
-
-                        {/* Service Card 5 */}
-                        <div
-                            className="group bg-card rounded-2xl shadow-sm hover:shadow-xl transition-all border border-border overflow-hidden flex flex-col">
-                            <div className="relative h-64 overflow-hidden">
-                                <img src={customFurniture}
-                                    alt="Custom Furniture"
-                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                            </div>
-                            <div className="p-8 flex flex-col flex-grow">
-                                <h3 className="text-2xl font-heading font-bold mb-3">Custom Furniture</h3>
-                                <p className="text-muted-foreground text-sm leading-relaxed mb-8 flex-grow">
-                                    Bespoke furniture pieces designed to perfectly fit your space, style, and functional
-                                    requirements.
-                                </p>
-                                <a href="#"
-                                    className="inline-flex items-center justify-center px-6 py-3 border border-border text-foreground font-semibold text-sm rounded-sm hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors w-full">
-                                    View Service
-                                </a>
-                            </div>
-                        </div>
-
-                        {/* Service Card 6 */}
-                        <div
-                            className="group bg-card rounded-2xl shadow-sm hover:shadow-xl transition-all border border-border overflow-hidden flex flex-col">
-                            <div className="relative h-64 overflow-hidden">
-                                <img src={homeRenovation}
-                                    alt="Home Renovation"
-                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                            </div>
-                            <div className="p-8 flex flex-col flex-grow">
-                                <h3 className="text-2xl font-heading font-bold mb-3">Home Renovation</h3>
-                                <p className="text-muted-foreground text-sm leading-relaxed mb-8 flex-grow">
-                                    Comprehensive end-to-end Decor transformations tailored to your lifestyle,
-                                    blending aesthetics with functionality.
-                                </p>
-                                <a href="#"
-                                    className="inline-flex items-center justify-center px-6 py-3 border border-border text-foreground font-semibold text-sm rounded-sm hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors w-full">
-                                    View Service
-                                </a>
-                            </div>
-                        </div>
+                        )}
                     </div>
 
                     <div className="text-center">
-                        <a href="#"
+                        <Link to="/services"
                             className="inline-flex items-center justify-center px-10 py-4 bg-primary text-primary-foreground font-bold uppercase tracking-widest text-sm rounded-sm hover:bg-primary/90 transition-all shadow-md hover:shadow-lg">
-                            View All Projects
-                        </a>
+                            View All Services
+                        </Link>
                     </div>
                 </div>
             </section>
-
-            {/* Portfolio / Before After Section */}
-            {/* <section className="py-24 px-6 bg-background border-y border-border">
-                <div className="max-w-7xl mx-auto">
-                    <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-                        <div>
-                            <span className="text-primary text-sm font-bold uppercase tracking-widest">Our Portfolio</span>
-                            <h2 className="text-3xl md:text-5xl font-heading font-bold mt-3 text-foreground">Featured
-                                Transformations</h2>
-                        </div>
-                        <a href="#"
-                            className="text-primary font-medium hover:text-foreground transition-colors flex items-center gap-2 border-b border-primary pb-1">
-                            View All Projects <iconify-icon icon="lucide:arrow-right"></iconify-icon>
-                        </a>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                       
-                        <div
-                            className="group relative overflow-hidden rounded-sm shadow-sm aspect-[4/3] bg-muted cursor-pointer">
-                            <img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=1000"
-                                alt="Living Room Transformation"
-                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                            <div
-                                className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-300">
-                            </div>
-
-                            <div className="absolute inset-0 p-8 flex flex-col justify-end text-white">
-                                <span
-                                    className="bg-primary/90 text-primary-foreground text-xs font-bold uppercase tracking-wider px-3 py-1 inline-block w-max mb-3 rounded-sm">Before
-                                    & After</span>
-                                <h3
-                                    className="text-2xl font-heading font-bold mb-2 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                                    Modern Living Room</h3>
-                                <p
-                                    className="text-sm text-white/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
-                                    UV Marble Sheet & WPC Louver Installation
-                                </p>
-                            </div>
-
-                            <div
-                                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-card/20 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 scale-50 group-hover:scale-100 border border-card/50">
-                                <iconify-icon icon="lucide:maximize" className="text-white text-2xl"></iconify-icon>
-                            </div>
-                        </div>
-
-                        
-                        <div
-                            className="group relative overflow-hidden rounded-sm shadow-sm aspect-[4/3] bg-muted cursor-pointer">
-                            <img src="kitchn.jpg" alt="Kitchen Transformation"
-                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                            <div
-                                className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-300">
-                            </div>
-
-                            <div className="absolute inset-0 p-8 flex flex-col justify-end text-white">
-                                <span
-                                    className="bg-card/20 backdrop-blur-md text-white border border-card/30 text-xs font-bold uppercase tracking-wider px-3 py-1 inline-block w-max mb-3 rounded-sm">Featured</span>
-                                <h3
-                                    className="text-2xl font-heading font-bold mb-2 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                                    Luxury Kitchen</h3>
-                                <p
-                                    className="text-sm text-white/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
-                                    Premium PVC Paneling & False Ceiling
-                                </p>
-                            </div>
-
-                            <div
-                                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-card/20 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 scale-50 group-hover:scale-100 border border-card/50">
-                                <iconify-icon icon="lucide:maximize" className="text-white text-2xl"></iconify-icon>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section> */}
 
             {/* Why Choose Us */}
             <section className="py-24 px-6 bg-background relative overflow-hidden">
@@ -722,7 +468,6 @@ function Home() {
 
             {/* CTA Section */}
             <section className="py-24 px-6 bg-slate-900 text-white text-center relative overflow-hidden">
-                {/* Decorative background element */}
                 <div
                     style={{ backgroundImage: `url(${transformSpace})` }}
                     className="absolute inset-0 opacity-10 bg-cover bg-center">
@@ -733,12 +478,19 @@ function Home() {
                     <p className="text-lg text-white/80 mb-10 font-light max-w-xl mx-auto">
                         Book a consultation with our experts today and take the first step towards your dream Decor.
                     </p>
-                    <a href="#"
+                    <button 
+                        onClick={() => setIsBookingModalOpen(true)}
                         className="inline-block px-10 py-5 bg-primary text-primary-foreground font-bold uppercase tracking-widest text-sm rounded-sm hover:bg-card hover:text-secondary transition-all shadow-lg hover:shadow-xl">
                         Schedule Consultation
-                    </a>
+                    </button>
                 </div>
             </section>
+
+            {/* Modals */}
+            <BookingModal 
+                isOpen={isBookingModalOpen} 
+                onClose={() => setIsBookingModalOpen(false)} 
+            />
 
         </main>
     )
