@@ -88,6 +88,8 @@ class BookingSerializer(serializers.ModelSerializer):
 class SiteSettingSerializer(serializers.ModelSerializer):
     why_choose_image_url = serializers.SerializerMethodField()
     cta_image_url = serializers.SerializerMethodField()
+    hero_video_url = serializers.SerializerMethodField()
+    hero_image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = SiteSetting
@@ -107,6 +109,22 @@ class SiteSettingSerializer(serializers.ModelSerializer):
             if request:
                 return request.build_absolute_uri(obj.cta_background_image.url)
             return obj.cta_background_image.url
+        return None
+
+    def get_hero_video_url(self, obj):
+        if obj.hero_video:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.hero_video.url)
+            return obj.hero_video.url
+        return None
+
+    def get_hero_image_url(self, obj):
+        if obj.hero_background_image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.hero_background_image.url)
+            return obj.hero_background_image.url
         return None
 
 class WhyChooseUsSerializer(serializers.ModelSerializer):

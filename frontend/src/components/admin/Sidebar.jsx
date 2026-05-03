@@ -27,6 +27,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   ];
 
   const pagesSubItems = [
+    { name: 'Hero Section', icon: 'lucify:layout', path: '/admin/pages/hero' },
     { name: 'Why Choose Us', icon: 'lucify:check-circle', path: '/admin/pages/why-choose-us' },
     { name: 'Our Process', icon: 'lucify:git-branch', path: '/admin/pages/our-process' },
     { name: 'Client Stories', icon: 'lucify:message-square-heart', path: '/admin/pages/testimonials' },

@@ -15,6 +15,7 @@ import AdminWhyChooseUs from '../pages/admin/AdminWhyChooseUs';
 import AdminOurProcess from '../pages/admin/AdminOurProcess';
 import AdminTestimonials from '../pages/admin/AdminTestimonials';
 import AdminCTA from '../pages/admin/AdminCTA';
+import AdminHero from '../pages/admin/AdminHero';
 
 const AdminRoutes = () => {
   return (
@@ -32,6 +33,7 @@ const AdminRoutes = () => {
           <Route path="reviews" element={<Reviews />} />
           <Route path="bookings" element={<AdminBookings />} />
           <Route path="categories" element={<Categories />} />
+          <Route path="pages/hero" element={<AdminHero />} />
           <Route path="pages/why-choose-us" element={<AdminWhyChooseUs />} />
           <Route path="pages/our-process" element={<AdminOurProcess />} />
           <Route path="pages/testimonials" element={<AdminTestimonials />} />

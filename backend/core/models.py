@@ -131,6 +131,13 @@ class SiteSetting(models.Model):
     seo_description = models.TextField(blank=True)
     seo_keywords = models.TextField(blank=True)
     
+    # Hero Section
+    hero_subtitle = models.CharField(max_length=200, default='Bipin Decor Studio')
+    hero_title = models.CharField(max_length=200, default='Elevate Your Living Space')
+    hero_description = models.TextField(blank=True, default='Crafted with precision, designed with elegance — we transform everyday spaces into timeless Decors.')
+    hero_video = models.FileField(upload_to='hero/', blank=True, null=True)
+    hero_background_image = models.ImageField(upload_to='hero/', blank=True, null=True)
+
     # Section Titles
     category_section_subtitle = models.CharField(max_length=200, default='Explore Spaces')
     category_section_title = models.CharField(max_length=200, default='Design by Category')

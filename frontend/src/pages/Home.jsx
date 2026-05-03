@@ -72,13 +72,15 @@ function Home() {
                 {/* Video */}
                 <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden z-0">
                     <video
+                        key={settings?.hero_video_url || 'static'}
                         className="w-full h-full object-cover"
                         autoPlay
                         muted
                         loop
                         playsInline
+                        poster={settings?.hero_image_url || craftsmanship}
                     >
-                        <source src={heroVideo} type="video/mp4" />
+                        <source src={settings?.hero_video_url || heroVideo} type="video/mp4" />
                     </video>
                 </div>
 
@@ -95,18 +97,17 @@ function Home() {
 
                     {/* Tagline */}
                     <span className="text-amber-400 tracking-[0.25em] uppercase text-xs md:text-sm mb-6 block font-medium">
-                        Bipin Decor Studio
+                        {settings?.hero_subtitle || 'Bipin Decor Studio'}
                     </span>
 
                     {/* Heading */}
                     <h1 className="text-4xl md:text-6xl text-white mb-6 leading-[1.2] font-serif font-medium">
-                        Elevate Your Living Space
+                        {settings?.hero_title || 'Elevate Your Living Space'}
                     </h1>
 
                     {/* Subtext */}
                     <p className="text-gray-300 text-base md:text-lg mb-10 leading-relaxed font-light">
-                        Crafted with precision, designed with elegance — we transform everyday spaces into timeless
-                        Decors.
+                        {settings?.hero_description || 'Crafted with precision, designed with elegance — we transform everyday spaces into timeless Decors.'}
                     </p>
 
                     {/* Buttons */}
