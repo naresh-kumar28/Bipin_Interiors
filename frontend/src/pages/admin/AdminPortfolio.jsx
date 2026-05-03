@@ -52,7 +52,7 @@ function AdminPortfolio() {
       setEditingProject(null);
       setFormData({
         title: '',
-        category: categories[0]?.id || '',
+        category: '',
         description: '',
         image: null
       });
@@ -121,7 +121,7 @@ function AdminPortfolio() {
   const filteredProjects = projects.filter(p => {
     const matchesSearch = p.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           p.category_name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || p.category_name.toLowerCase() === selectedCategory.toLowerCase();
+    const matchesCategory = selectedCategory === 'all' || p.category_slug === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 

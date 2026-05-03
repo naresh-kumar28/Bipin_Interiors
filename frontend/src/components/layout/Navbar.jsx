@@ -61,7 +61,7 @@ function Navbar() {
     return (
         <>
             {/* Desktop Header */}
-            <header className="sticky top-0 z-50 w-full border-b border-card/10 bg-card/80 backdrop-blur-xl supports-[backdrop-filter]:bg-card/70 hidden lg:block">
+            <header className="sticky top-0 z-50 w-full border-b border-card/10 bg-white dark:bg-card hidden lg:block">
                 <div className="max-w-7xl mx-auto px-6 lg:px-8">
                     <div className="flex h-[78px] items-center justify-between">
                         <Link to="/" className="flex items-center gap-3 shrink-0">
@@ -124,7 +124,7 @@ function Navbar() {
             </header>
 
             {/* Mobile Header */}
-            <div className="lg:hidden w-full bg-card/80 backdrop-blur-xl border-b border-border py-4 px-6 flex items-center justify-between sticky top-0 z-50">
+            <div className="lg:hidden w-full bg-white dark:bg-card border-b border-border py-4 px-6 flex items-center justify-between sticky top-0 z-50">
                 <Link to="/" className="flex items-center gap-3 shrink-0">
                     {settings?.logo ? (
                         <img src={settings.logo} alt={settings?.website_name || "Logo"} className="h-10 object-contain" />
@@ -153,32 +153,57 @@ function Navbar() {
             </div>
 
             {/* Mobile Bottom Tab Bar */}
-            <div className={`lg:hidden fixed bottom-6 left-6 right-6 z-[60] transition-all duration-500 transform ${showFloatingButton ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'}`}>
-                <nav className="bg-card/90 backdrop-blur-xl border border-border/50 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex items-center justify-around px-2 py-3">
-                    <NavLink to="/" className={({ isActive }) => `flex flex-col items-center gap-1 transition-all ${isActive ? 'text-primary scale-110' : 'text-muted-foreground'}`}>
-                        <iconify-icon icon="lucide:home" class="text-xl"></iconify-icon>
-                        <span className="text-[10px] font-bold uppercase tracking-tighter">Home</span>
+            <div className={`lg:hidden fixed bottom-0 left-0 w-full z-[60] transition-transform duration-500 transform ${showFloatingButton ? 'translate-y-0' : 'translate-y-full'}`}>
+                <nav className="bg-white dark:bg-card border-t border-border shadow-[0_-4px_20px_rgba(0,0,0,0.05)] flex items-center justify-around px-2 pt-2 pb-3">
+                    <NavLink to="/" className={({ isActive }) => `flex flex-col items-center gap-1 px-4 py-1 transition-all duration-300 relative ${isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
+                        {({ isActive }) => (
+                            <>
+                                {isActive && <span className="absolute -top-2 left-1/2 -translate-x-1/2 w-10 h-[3px] rounded-b-full bg-primary shadow-[0_0_8px_rgba(197,160,89,0.5)]"></span>}
+                                <iconify-icon icon="lucide:home" class={`text-[22px] transition-transform ${isActive ? 'scale-110' : ''}`}></iconify-icon>
+                                <span className={`text-[10px] ${isActive ? 'font-bold' : 'font-medium'}`}>Home</span>
+                            </>
+                        )}
                     </NavLink>
 
-                    <NavLink to="/services" className={({ isActive }) => `flex flex-col items-center gap-1 transition-all ${isActive ? 'text-primary scale-110' : 'text-muted-foreground'}`}>
-                        <iconify-icon icon="lucide:layers" class="text-xl"></iconify-icon>
-                        <span className="text-[10px] font-bold uppercase tracking-tighter">Services</span>
+                    <NavLink to="/services" className={({ isActive }) => `flex flex-col items-center gap-1 px-4 py-1 transition-all duration-300 relative ${isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
+                        {({ isActive }) => (
+                            <>
+                                {isActive && <span className="absolute -top-2 left-1/2 -translate-x-1/2 w-10 h-[3px] rounded-b-full bg-primary shadow-[0_0_8px_rgba(197,160,89,0.5)]"></span>}
+                                <iconify-icon icon="lucide:layers" class={`text-[22px] transition-transform ${isActive ? 'scale-110' : ''}`}></iconify-icon>
+                                <span className={`text-[10px] ${isActive ? 'font-bold' : 'font-medium'}`}>Services</span>
+                            </>
+                        )}
                     </NavLink>
 
-                    <NavLink to="/portfolio" className={({ isActive }) => `flex flex-col items-center gap-1 transition-all ${isActive ? 'text-primary scale-110' : 'text-muted-foreground'}`}>
-                        <iconify-icon icon="lucide:image" class="text-xl"></iconify-icon>
-                        <span className="text-[10px] font-bold uppercase tracking-tighter">Our Work</span>
+                    <NavLink to="/portfolio" className={({ isActive }) => `flex flex-col items-center gap-1 px-4 py-1 transition-all duration-300 relative ${isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
+                        {({ isActive }) => (
+                            <>
+                                {isActive && <span className="absolute -top-2 left-1/2 -translate-x-1/2 w-10 h-[3px] rounded-b-full bg-primary shadow-[0_0_8px_rgba(197,160,89,0.5)]"></span>}
+                                <iconify-icon icon="lucide:image" class={`text-[22px] transition-transform ${isActive ? 'scale-110' : ''}`}></iconify-icon>
+                                <span className={`text-[10px] ${isActive ? 'font-bold' : 'font-medium'}`}>Our Work</span>
+                            </>
+                        )}
                     </NavLink>
 
-                    <NavLink to="/contact" className={({ isActive }) => `flex flex-col items-center gap-1 transition-all ${isActive ? 'text-primary scale-110' : 'text-muted-foreground'}`}>
-                        <iconify-icon icon="lucide:mail" class="text-xl"></iconify-icon>
-                        <span className="text-[10px] font-bold uppercase tracking-tighter">Contact</span>
+                    <NavLink to="/contact" className={({ isActive }) => `flex flex-col items-center gap-1 px-4 py-1 transition-all duration-300 relative ${isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
+                        {({ isActive }) => (
+                            <>
+                                {isActive && <span className="absolute -top-2 left-1/2 -translate-x-1/2 w-10 h-[3px] rounded-b-full bg-primary shadow-[0_0_8px_rgba(197,160,89,0.5)]"></span>}
+                                <iconify-icon icon="lucide:mail" class={`text-[22px] transition-transform ${isActive ? 'scale-110' : ''}`}></iconify-icon>
+                                <span className={`text-[10px] ${isActive ? 'font-bold' : 'font-medium'}`}>Contact</span>
+                            </>
+                        )}
                     </NavLink>
 
                     {user && (
-                        <NavLink to="/admin/dashboard" className={({ isActive }) => `flex flex-col items-center gap-1 transition-all ${isActive ? 'text-primary scale-110' : 'text-muted-foreground'}`}>
-                            <iconify-icon icon="lucide:layout-dashboard" class="text-xl"></iconify-icon>
-                            <span className="text-[10px] font-bold uppercase tracking-tighter">Admin</span>
+                        <NavLink to="/admin/dashboard" className={({ isActive }) => `flex flex-col items-center gap-1 px-4 py-1 transition-all duration-300 relative ${isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
+                            {({ isActive }) => (
+                                <>
+                                    {isActive && <span className="absolute -top-2 left-1/2 -translate-x-1/2 w-10 h-[3px] rounded-b-full bg-primary shadow-[0_0_8px_rgba(197,160,89,0.5)]"></span>}
+                                    <iconify-icon icon="lucide:layout-dashboard" class={`text-[22px] transition-transform ${isActive ? 'scale-110' : ''}`}></iconify-icon>
+                                    <span className={`text-[10px] ${isActive ? 'font-bold' : 'font-medium'}`}>Admin</span>
+                                </>
+                            )}
                         </NavLink>
                     )}
                 </nav>

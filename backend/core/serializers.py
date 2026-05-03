@@ -56,6 +56,7 @@ class ProjectReviewSerializer(serializers.ModelSerializer):
 
 class ProjectSerializer(serializers.ModelSerializer):
     category_name = serializers.ReadOnlyField(source='category.name')
+    category_slug = serializers.ReadOnlyField(source='category.slug')
     reviews = ProjectReviewSerializer(many=True, read_only=True)
     
     class Meta:

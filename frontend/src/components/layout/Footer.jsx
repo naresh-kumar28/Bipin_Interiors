@@ -41,37 +41,20 @@ function Footer() {
                     </p>
 
                     <div className="flex items-center gap-3">
-                        {settings?.instagram_url && (
-                            <a href={settings.instagram_url} target="_blank" rel="noopener noreferrer"
-                                className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 shadow-sm">
-                                <iconify-icon icon="lucide:instagram" class="text-xl"></iconify-icon>
-                            </a>
-                        )}
+                        <a href={settings?.instagram_url || "#"} target="_blank" rel="noopener noreferrer"
+                            className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 shadow-sm">
+                            <iconify-icon icon="lucide:instagram" class="text-xl"></iconify-icon>
+                        </a>
 
-                        {settings?.facebook_url && (
-                            <a href={settings.facebook_url} target="_blank" rel="noopener noreferrer"
-                                className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 shadow-sm">
-                                <iconify-icon icon="lucide:facebook" class="text-xl"></iconify-icon>
-                            </a>
-                        )}
+                        <a href={settings?.facebook_url || "#"} target="_blank" rel="noopener noreferrer"
+                            className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 shadow-sm">
+                            <iconify-icon icon="lucide:facebook" class="text-xl"></iconify-icon>
+                        </a>
 
-                        {settings?.youtube_url && (
-                            <a href={settings.youtube_url} target="_blank" rel="noopener noreferrer"
-                                className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 shadow-sm">
-                                <iconify-icon icon="lucide:youtube" class="text-xl"></iconify-icon>
-                            </a>
-                        )}
-                        
-                        {!settings?.instagram_url && !settings?.facebook_url && !settings?.youtube_url && (
-                            <>
-                                <Link to="#" className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 shadow-sm">
-                                    <iconify-icon icon="lucide:instagram" class="text-xl"></iconify-icon>
-                                </Link>
-                                <Link to="#" className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 shadow-sm">
-                                    <iconify-icon icon="lucide:facebook" class="text-xl"></iconify-icon>
-                                </Link>
-                            </>
-                        )}
+                        <a href={settings?.youtube_url || "#"} target="_blank" rel="noopener noreferrer"
+                            className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 shadow-sm">
+                            <iconify-icon icon="lucide:youtube" class="text-xl"></iconify-icon>
+                        </a>
                     </div>
                 </div>
 
