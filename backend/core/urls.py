@@ -4,7 +4,7 @@ from .views import (
     RegisterView, UserProfileView, CategoryViewSet, 
     ProjectViewSet, ProjectRequestViewSet, ProjectReviewViewSet,
     ServiceViewSet, DashboardStatsView, ServiceRequestViewSet, BookingViewSet,
-    SiteSettingAPIView
+    SiteSettingAPIView, WhyChooseUsViewSet, OurProcessViewSet, TestimonialViewSet
 )
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -19,6 +19,9 @@ router.register(r'project-requests', ProjectRequestViewSet)
 router.register(r'project-reviews', ProjectReviewViewSet)
 router.register(r'service-requests', ServiceRequestViewSet)
 router.register(r'bookings', BookingViewSet)
+router.register(r'why-choose-us', WhyChooseUsViewSet)
+router.register(r'our-process', OurProcessViewSet)
+router.register(r'testimonials', TestimonialViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

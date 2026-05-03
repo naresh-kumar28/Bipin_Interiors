@@ -201,7 +201,7 @@ function AdminPortfolio() {
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-[10px] font-bold text-primary uppercase tracking-widest">{project.category_name}</span>
                   <div className="flex items-center gap-1 text-[10px] text-amber-500 font-bold uppercase">
-                    <iconify-icon icon="lucide:star" class="fill-current"></iconify-icon> {parseFloat(project.rating).toFixed(1)}
+                    <iconify-icon icon="material-symbols:star"></iconify-icon> {parseFloat(project.rating).toFixed(1)}
                   </div>
                 </div>
                 <h3 className="font-heading font-bold text-foreground truncate">{project.title}</h3>

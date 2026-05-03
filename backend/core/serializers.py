@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Category, Project, ProjectRequest, ProjectReview, Service, ServiceRequest, Booking, SiteSetting
+from .models import Category, Project, ProjectRequest, ProjectReview, Service, ServiceRequest, Booking, SiteSetting, WhyChooseUs, OurProcess, Testimonial
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -86,6 +86,40 @@ class BookingSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class SiteSettingSerializer(serializers.ModelSerializer):
+    why_choose_image_url = serializers.SerializerMethodField()
+    cta_image_url = serializers.SerializerMethodField()
+
     class Meta:
         model = SiteSetting
+        fields = '__all__'
+
+    def get_why_choose_image_url(self, obj):
+        if obj.why_choose_image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.why_choose_image.url)
+            return obj.why_choose_image.url
+        return None
+
+    def get_cta_image_url(self, obj):
+        if obj.cta_background_image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.cta_background_image.url)
+            return obj.cta_background_image.url
+        return None
+
+class WhyChooseUsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WhyChooseUs
+        fields = '__all__'
+
+class OurProcessSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OurProcess
+        fields = '__all__'
+
+class TestimonialSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Testimonial
         fields = '__all__'

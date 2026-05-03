@@ -8,9 +8,10 @@ from django.db.models.functions import TruncMonth
 from .serializers import (
     RegisterSerializer, UserSerializer, CategorySerializer, 
     ProjectSerializer, ProjectRequestSerializer, ProjectReviewSerializer,
-    ServiceSerializer, ServiceRequestSerializer, BookingSerializer, SiteSettingSerializer
+    ServiceSerializer, ServiceRequestSerializer, BookingSerializer, SiteSettingSerializer,
+    WhyChooseUsSerializer, OurProcessSerializer, TestimonialSerializer
 )
-from .models import Category, Project, ProjectRequest, ProjectReview, Service, ServiceRequest, Booking, SiteSetting
+from .models import Category, Project, ProjectRequest, ProjectReview, Service, ServiceRequest, Booking, SiteSetting, WhyChooseUs, OurProcess, Testimonial
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.views import APIView
 
@@ -107,6 +108,39 @@ class BookingViewSet(viewsets.ModelViewSet):
             return [AllowAny()]
         return [IsAdminUser()]
 
+class WhyChooseUsViewSet(viewsets.ModelViewSet):
+    queryset = WhyChooseUs.objects.all()
+    serializer_class = WhyChooseUsSerializer
+
+    def get_permissions(self):
+        if self.action == 'list':
+            return [AllowAny()]
+        return [IsAdminUser()]
+
+class OurProcessViewSet(viewsets.ModelViewSet):
+    queryset = OurProcess.objects.all()
+    serializer_class = OurProcessSerializer
+
+    def get_permissions(self):
+        if self.action == 'list':
+            return [AllowAny()]
+        return [IsAdminUser()]
+
+class TestimonialViewSet(viewsets.ModelViewSet):
+    queryset = Testimonial.objects.filter(is_active=True)
+    serializer_class = TestimonialSerializer
+
+    def get_queryset(self):
+        # Admin sees all; public sees only active
+        if self.request.user and self.request.user.is_staff:
+            return Testimonial.objects.all()
+        return Testimonial.objects.filter(is_active=True)
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [AllowAny()]
+        return [IsAdminUser()]
+
 class ProjectReviewViewSet(viewsets.ModelViewSet):
     queryset = ProjectReview.objects.all().order_by('-created_at')
     serializer_class = ProjectReviewSerializer
@@ -131,7 +165,11 @@ class ProjectReviewViewSet(viewsets.ModelViewSet):
         project.recalculate_rating()
         return response
 
+from rest_framework.parsers import MultiPartParser, FormParser
+
 class SiteSettingAPIView(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+    
     def get_permissions(self):
         if self.request.method in ['POST', 'PUT', 'PATCH']:
             return [IsAdminUser()]
@@ -142,12 +180,12 @@ class SiteSettingAPIView(APIView):
         return obj
 
     def get(self, request):
-        serializer = SiteSettingSerializer(self.get_object())
+        serializer = SiteSettingSerializer(self.get_object(), context={'request': request})
         return Response(serializer.data)
 
     def patch(self, request):
         obj = self.get_object()
-        serializer = SiteSettingSerializer(obj, data=request.data, partial=True)
+        serializer = SiteSettingSerializer(obj, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

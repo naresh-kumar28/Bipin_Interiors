@@ -136,7 +136,22 @@ class SiteSetting(models.Model):
     category_section_title = models.CharField(max_length=200, default='Design by Category')
     service_section_subtitle = models.CharField(max_length=200, default='Our Expertise')
     service_section_title = models.CharField(max_length=200, default='Bipin Decor Services')
-    
+    why_choose_subtitle = models.CharField(max_length=200, default='Why Choose Us')
+    why_choose_title = models.CharField(max_length=200, default='Craftsmanship Meets Elegance')
+    why_choose_description = models.TextField(blank=True, default="We don't just renovate spaces; we craft environments that reflect your personal style while ensuring durability and flawless execution.")
+    why_choose_image = models.ImageField(upload_to='why_choose/', blank=True, null=True)
+    process_section_subtitle = models.CharField(max_length=200, default='Our Process')
+    process_section_title = models.CharField(max_length=200, default='A Refined Journey From Concept to Completion')
+    process_section_description = models.TextField(blank=True, default='Every project is handled with thoughtful planning, premium craftsmanship, and a seamless execution process.')
+    testimonial_section_subtitle = models.CharField(max_length=200, default='CLIENT STORIES')
+    testimonial_section_title = models.CharField(max_length=200, default='Words of Trust')
+
+    # CTA Section
+    cta_title = models.CharField(max_length=200, default='Ready to Transform Your Space?')
+    cta_description = models.TextField(blank=True, default='Book a consultation with our experts today and take the first step towards your dream Decor.')
+    cta_button_text = models.CharField(max_length=100, default='Schedule Consultation')
+    cta_background_image = models.ImageField(upload_to='cta/', blank=True, null=True)
+
     # Theme
     primary_color = models.CharField(max_length=20, blank=True, default='#C5A059')
 
@@ -153,3 +168,49 @@ class SiteSetting(models.Model):
 
     class Meta:
         verbose_name_plural = "Site Settings"
+
+class WhyChooseUs(models.Model):
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+    icon = models.CharField(max_length=50, default='lucide:check-circle')
+    order = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name_plural = "Why Choose Us"
+        ordering = ['order', 'created_at']
+
+class OurProcess(models.Model):
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+    icon = models.CharField(max_length=50, default='lucide:circle')
+    order = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name_plural = "Our Process Steps"
+        ordering = ['order', 'created_at']
+
+class Testimonial(models.Model):
+    name = models.CharField(max_length=100)
+    role = models.CharField(max_length=100, default='Client')
+    photo_url = models.URLField(blank=True, default='')
+    rating = models.IntegerField(default=5)
+    review = models.TextField()
+    order = models.IntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} - {self.role}"
+
+    class Meta:
+        verbose_name_plural = "Testimonials"
+        ordering = ['order', 'created_at']
+

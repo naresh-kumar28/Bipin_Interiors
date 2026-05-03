@@ -4,8 +4,10 @@ import { motion } from 'framer-motion'
 import api from '../api/api'
 import { servicesHero, transformSpace } from '../assets/images'
 import BookingModal from '../components/BookingModal'
+import { useSiteSettings } from '../context/SiteContext'
 
 function Services() {
+    const { settings } = useSiteSettings();
     const [services, setServices] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedService, setSelectedService] = useState(null);
@@ -275,19 +277,21 @@ function Services() {
             {/* CTA Section */}
             <section className="py-24 px-6 bg-slate-900 text-white text-center relative overflow-hidden">
                 <div
-                    style={{ backgroundImage: `url(${transformSpace})` }}
+                    style={{ backgroundImage: `url(${settings?.cta_image_url || transformSpace})` }}
                     className="absolute inset-0 opacity-10 bg-cover bg-center">
                 </div>
 
                 <div className="max-w-3xl mx-auto relative z-10">
-                    <h2 className="text-4xl md:text-6xl font-bold mb-6">Ready to Transform Your Space?</h2>
+                    <h2 className="text-4xl md:text-6xl font-bold mb-6">
+                        {settings?.cta_title || 'Ready to Transform Your Space?'}
+                    </h2>
                     <p className="text-lg text-white/80 mb-10 font-light max-w-xl mx-auto">
-                        Book a consultation with our experts today and take the first step towards your dream Decor.
+                        {settings?.cta_description || 'Book a consultation with our experts today and take the first step towards your dream Decor.'}
                     </p>
                     <button 
                         onClick={() => setShowBookingModal(true)}
                         className="inline-block px-10 py-5 bg-primary text-primary-foreground font-bold uppercase tracking-widest text-sm rounded-sm hover:bg-card hover:text-secondary transition-all shadow-lg hover:shadow-xl">
-                        Schedule Consultation
+                        {settings?.cta_button_text || 'Schedule Consultation'}
                     </button>
                 </div>
             </section>

@@ -132,3 +132,24 @@
         scrollbar-width: none;
     }
 }
+
+/* Swiper Customization */
+.testimonial-swiper {
+    padding-bottom: 60px !important;
+}
+
+.testimonial-swiper .swiper-pagination-bullet {
+    background: var(--primary) !important;
+    opacity: 0.2;
+    transition: all 0.3s ease;
+}
+
+.testimonial-swiper .swiper-pagination-bullet-active {
+    opacity: 1;
+    width: 20px !important;
+    border-radius: 4px !important;
+}
+
+.testimonial-swiper .swiper-slide {
+    height: auto !important;
+}

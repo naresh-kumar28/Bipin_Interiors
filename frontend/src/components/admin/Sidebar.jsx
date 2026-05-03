@@ -26,6 +26,13 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     { name: 'Reports', icon: 'lucify:bar-chart-2', path: '/admin/reports' },
   ];
 
+  const pagesSubItems = [
+    { name: 'Why Choose Us', icon: 'lucify:check-circle', path: '/admin/pages/why-choose-us' },
+    { name: 'Our Process', icon: 'lucify:git-branch', path: '/admin/pages/our-process' },
+    { name: 'Client Stories', icon: 'lucify:message-square-heart', path: '/admin/pages/testimonials' },
+    { name: 'CTA Section', icon: 'lucify:megaphone', path: '/admin/pages/cta' },
+  ];
+
   const isActive = (path) => location.pathname === path;
 
   return (
@@ -79,18 +86,35 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           </div>
 
           {systemItems.map((item) => (
-            <Link
-              key={item.name}
-              to={item.path}
-              onClick={() => { if (window.innerWidth < 1024) toggleSidebar(); }}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${isActive(item.path)
-                  ? 'bg-primary/10 text-primary border-l-4 border-primary'
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+            <React.Fragment key={item.name}>
+              <Link
+                to={item.path}
+                onClick={() => { if (window.innerWidth < 1024) toggleSidebar(); }}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${
+                  isActive(item.path)
+                    ? 'bg-primary/10 text-primary border-l-4 border-primary'
+                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                 }`}
-            >
-              <iconify-icon icon={item.icon.replace('lucify', 'lucide')} class="text-lg"></iconify-icon>
-              {item.name}
-            </Link>
+              >
+                <iconify-icon icon={item.icon.replace('lucify', 'lucide')} class="text-lg"></iconify-icon>
+                {item.name}
+              </Link>
+              {item.name === 'Pages' && pagesSubItems.map((sub) => (
+                <Link
+                  key={sub.name}
+                  to={sub.path}
+                  onClick={() => { if (window.innerWidth < 1024) toggleSidebar(); }}
+                  className={`flex items-center gap-3 pl-8 pr-3 py-2 rounded-lg font-medium text-sm transition-colors ${
+                    isActive(sub.path)
+                      ? 'bg-primary/10 text-primary border-l-4 border-primary'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  }`}
+                >
+                  <iconify-icon icon={sub.icon.replace('lucify', 'lucide')} class="text-base"></iconify-icon>
+                  {sub.name}
+                </Link>
+              ))}
+            </React.Fragment>
           ))}
         </div>
 

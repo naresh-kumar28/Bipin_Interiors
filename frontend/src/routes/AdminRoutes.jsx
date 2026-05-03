@@ -11,6 +11,10 @@ import Categories from '../pages/admin/Categories'
 import Reviews from '../pages/admin/Reviews'
 import AdminBookings from '../pages/admin/AdminBookings'
 import PlaceholderPage from '../pages/admin/PlaceholderPage'
+import AdminWhyChooseUs from '../pages/admin/AdminWhyChooseUs';
+import AdminOurProcess from '../pages/admin/AdminOurProcess';
+import AdminTestimonials from '../pages/admin/AdminTestimonials';
+import AdminCTA from '../pages/admin/AdminCTA';
 
 const AdminRoutes = () => {
   return (
@@ -28,6 +32,10 @@ const AdminRoutes = () => {
           <Route path="reviews" element={<Reviews />} />
           <Route path="bookings" element={<AdminBookings />} />
           <Route path="categories" element={<Categories />} />
+          <Route path="pages/why-choose-us" element={<AdminWhyChooseUs />} />
+          <Route path="pages/our-process" element={<AdminOurProcess />} />
+          <Route path="pages/testimonials" element={<AdminTestimonials />} />
+          <Route path="pages/cta" element={<AdminCTA />} />
           <Route path="testimonials" element={<Reviews />} />
           <Route path="customers" element={<PlaceholderPage title="Customers Management" />} />
           <Route path="pages" element={<PlaceholderPage title="Pages Management" />} />
