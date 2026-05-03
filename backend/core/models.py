@@ -138,6 +138,59 @@ class SiteSetting(models.Model):
     hero_video = models.FileField(upload_to='hero/', blank=True, null=True)
     hero_background_image = models.ImageField(upload_to='hero/', blank=True, null=True)
 
+    # About Page Content
+    about_hero_subtitle = models.CharField(max_length=200, default='Our Story')
+    about_hero_title = models.CharField(max_length=200, default='About Bipin Decors')
+    about_hero_description = models.TextField(blank=True, default='Crafting luxurious, functional, and timeless spaces with uncompromising attention to detail.')
+    about_hero_image = models.ImageField(upload_to='about/', blank=True, null=True)
+
+    about_story_subtitle = models.CharField(max_length=200, default='The Beginning')
+    about_story_title = models.CharField(max_length=200, default='A Legacy of Design Excellence')
+    about_story_p1 = models.TextField(blank=True, default='Founded with a passion for transforming ordinary rooms into extraordinary environments, Bipin Decors has grown into a premier Decor installation studio. We specialize in bringing high-end residential and commercial visions to life.')
+    about_story_p2 = models.TextField(blank=True, default='Our journey began over a decade ago with a simple philosophy: Decor design should not only look stunning but also withstand the test of time. Today, we are known for our meticulous craftsmanship in UV marble sheets, PVC paneling, and bespoke false ceilings.')
+    about_story_years = models.CharField(max_length=20, default='10+')
+    about_story_projects = models.CharField(max_length=20, default='500+')
+    about_story_image = models.ImageField(upload_to='about/', blank=True, null=True)
+
+    about_philosophy_subtitle = models.CharField(max_length=200, default='Our Philosophy')
+    about_philosophy_title = models.CharField(max_length=200, default='Uncompromising Craftsmanship')
+    
+    about_card1_title = models.CharField(max_length=200, default='Premium Materials')
+    about_card1_desc = models.TextField(blank=True, default='We meticulously source the highest grade UV marble, PVC panels, and WPC louvers. Our materials are chosen for their durability, finish, and ability to elevate any space.')
+    about_card1_icon = models.CharField(max_length=100, default='lucide:gem')
+
+    about_card2_title = models.CharField(max_length=200, default='Precision Execution')
+    about_card2_desc = models.TextField(blank=True, default='Luxury is in the details. Our installation process is marked by exact measurements, seamless joints, and a flawless finish that defines high-end Decor design.')
+    about_card2_icon = models.CharField(max_length=100, default='lucide:ruler')
+
+    about_card3_title = models.CharField(max_length=200, default='Client-Centric Approach')
+    about_card3_desc = models.TextField(blank=True, default='We collaborate closely with our clients, ensuring their vision is translated into reality with transparency, timely delivery, and utmost professionalism.')
+    about_card3_icon = models.CharField(max_length=100, default='lucide:users')
+
+    about_expertise_subtitle = models.CharField(max_length=200, default='Our Expertise')
+    about_expertise_title = models.CharField(max_length=200, default='Master Artisans at Work')
+    about_expertise_p1 = models.TextField(blank=True, default='Behind every flawless installation is a team of dedicated artisans. Our installers are not just workers; they are craftsmen who take immense pride in their art.')
+    about_expertise_p2 = models.TextField(blank=True, default='With rigorous training and years of hands-on experience, our team handles complex architectural challenges with ease, ensuring that every panel, sheet, and louver is placed with absolute perfection.')
+    about_expertise_image1 = models.ImageField(upload_to='about/', blank=True, null=True)
+    about_expertise_image2 = models.ImageField(upload_to='about/', blank=True, null=True)
+
+    # Contact Page Content
+    contact_hero_subtitle = models.CharField(max_length=200, default='Get in Touch')
+    contact_hero_title = models.CharField(max_length=200, default="Let's Discuss Your Project")
+    contact_hero_description = models.TextField(blank=True, default='Whether you have a clear vision or need expert guidance, our team is here to bring your ideas to life.')
+    contact_hero_image = models.ImageField(upload_to='contact/', blank=True, null=True)
+
+    contact_card_badge = models.CharField(max_length=100, default='Direct Support')
+    contact_card_title = models.CharField(max_length=200, default='Talk to Us Directly 😊')
+    contact_card_p1 = models.TextField(blank=True, default='Feel free to contact us for false ceiling, PVC paneling, renovation, or interior decoration work.')
+    contact_card_p2 = models.TextField(blank=True, default='No bots, no delay — direct interaction with our team.')
+
+    # Services Page Content
+    service_hero_subtitle = models.CharField(max_length=200, default='What We Do')
+    service_hero_title = models.CharField(max_length=200, default='Expert Solutions for Modern Living')
+    service_hero_description = models.TextField(blank=True, default='Discover our range of premium Decor services, from precision false ceilings to elegant wall paneling.')
+    service_hero_image = models.ImageField(upload_to='services_hero/', blank=True, null=True)
+
     # Section Titles
     category_section_subtitle = models.CharField(max_length=200, default='Explore Spaces')
     category_section_title = models.CharField(max_length=200, default='Design by Category')

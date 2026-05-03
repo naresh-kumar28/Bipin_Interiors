@@ -74,14 +74,30 @@ function AdminSettings() {
     try {
       const formData = new FormData();
       
-      // Append all text fields
+      // List of image/file fields to handle carefully
+      const fileFields = [
+        'logo', 'favicon', 'hero_video', 'hero_background_image', 
+        'about_hero_image', 'about_story_image', 'about_expertise_image1', 
+        'about_expertise_image2', 'contact_hero_image', 'service_hero_image',
+        'why_choose_image', 'cta_background_image'
+      ];
+
+      // Append all text fields, skip image URLs and custom _url fields
       Object.keys(settings).forEach(key => {
-        if (key !== 'logo' && key !== 'favicon' && settings[key] !== null) {
-          formData.append(key, settings[key]);
-        }
+        const value = settings[key];
+        
+        // Skip nulls, custom URL fields ending in _url, and file fields that are currently strings (URLs)
+        if (value === null) return;
+        if (key.endsWith('_url')) return;
+        if (fileFields.includes(key) && typeof value === 'string') return;
+        
+        // Skip logo and favicon specifically as they are handled separately via state
+        if (key === 'logo' || key === 'favicon') return;
+
+        formData.append(key, value);
       });
       
-      // Append files if new ones selected
+      // Append files if new ones selected from separate state
       if (logoFile) formData.append('logo', logoFile);
       if (faviconFile) formData.append('favicon', faviconFile);
       
@@ -89,6 +105,7 @@ function AdminSettings() {
       
       setSaveMessage({ type: 'success', text: 'Settings saved successfully!' });
       setTimeout(() => setSaveMessage({ type: '', text: '' }), 3000);
+      fetchSettings(); // Refresh data
     } catch (err) {
       console.error("Failed to save settings:", err);
       setSaveMessage({ type: 'error', text: 'Failed to save settings. Please try again.' });

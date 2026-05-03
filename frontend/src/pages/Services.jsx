@@ -80,10 +80,13 @@ function Services() {
 
             {/* Page Header */}
             <section className="py-24 px-6 bg-slate-900 text-white text-center relative overflow-hidden">
-                <div
-                    style={{ backgroundImage: `url(${servicesHero})` }}
-                    className="absolute inset-0 opacity-10 bg-cover bg-center">
-                </div>
+                <motion.div
+                    initial={{ scale: 1.1, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 0.1 }}
+                    transition={{ duration: 1.5 }}
+                    style={{ backgroundImage: `url(${settings?.service_hero_image_url || servicesHero})` }}
+                    className="absolute inset-0 bg-cover bg-center">
+                </motion.div>
                 <div className="max-w-3xl mx-auto relative z-10">
                     <motion.span 
                         initial={{ opacity: 0, y: 20 }}
@@ -92,16 +95,16 @@ function Services() {
                         transition={{ duration: 0.6 }}
                         className="text-primary text-sm font-bold uppercase tracking-widest mb-4 block"
                     >
-                        What We Do
+                        {settings?.service_hero_subtitle || 'What We Do'}
                     </motion.span>
                     <motion.h1 
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.6, delay: 0.1 }}
-                        className="text-4xl md:text-6xl font-bold mb-6"
+                        className="text-4xl md:text-6xl font-heading font-bold mb-6"
                     >
-                        Our Premium Services
+                        {settings?.service_hero_title || 'Expert Solutions for Modern Living'}
                     </motion.h1>
                     <motion.p 
                         initial={{ opacity: 0, y: 20 }}
@@ -110,8 +113,7 @@ function Services() {
                         transition={{ duration: 0.6, delay: 0.2 }}
                         className="text-lg text-white/80 font-light max-w-xl mx-auto"
                     >
-                        Expert installations and bespoke finishes designed to elevate your living and working
-                        environments.
+                        {settings?.service_hero_description || 'Discover our range of premium Decor services, from precision false ceilings to elegant wall paneling.'}
                     </motion.p>
                 </div>
             </section>

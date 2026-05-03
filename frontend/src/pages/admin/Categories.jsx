@@ -133,12 +133,18 @@ function Categories() {
     e.preventDefault();
     setIsSavingSettings(true);
     try {
-      await api.patch('settings/', settingsData);
+      const formData = new FormData();
+      formData.append('category_section_subtitle', settingsData.category_section_subtitle);
+      formData.append('category_section_title', settingsData.category_section_title);
+
+      await api.patch('settings/', formData);
       setIsSettingsModalOpen(false);
       // Refresh to ensure site-wide updates
       window.location.reload(); 
     } catch (err) {
-      alert("Failed to save settings.");
+      console.error("Failed to save category settings", err);
+      const errorMsg = err.response?.data ? JSON.stringify(err.response.data) : "Failed to save settings. Please try again.";
+      alert(errorMsg);
     } finally {
       setIsSavingSettings(false);
     }

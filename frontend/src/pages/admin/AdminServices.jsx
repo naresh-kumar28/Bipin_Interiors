@@ -19,8 +19,13 @@ function AdminServices() {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [settingsData, setSettingsData] = useState({
     service_section_subtitle: '',
-    service_section_title: ''
+    service_section_title: '',
+    service_hero_subtitle: '',
+    service_hero_title: '',
+    service_hero_description: '',
+    service_hero_image: null
   });
+  const [heroPreview, setHeroPreview] = useState(null);
   const [isSavingSettings, setIsSavingSettings] = useState(false);
 
   useEffect(() => {
@@ -31,10 +36,18 @@ function AdminServices() {
   const fetchSettings = async () => {
     try {
       const response = await api.get('settings/');
+      const data = response.data;
       setSettingsData({
-        service_section_subtitle: response.data.service_section_subtitle || 'Our Expertise',
-        service_section_title: response.data.service_section_title || 'Bipin Decor Services'
+        service_section_subtitle: data.service_section_subtitle || 'Our Expertise',
+        service_section_title: data.service_section_title || 'Bipin Decor Services',
+        service_hero_subtitle: data.service_hero_subtitle || 'What We Do',
+        service_hero_title: data.service_hero_title || 'Expert Solutions for Modern Living',
+        service_hero_description: data.service_hero_description || 'Discover our range of premium Decor services, from precision false ceilings to elegant wall paneling.',
+        service_hero_image: null
       });
+      if (data.service_hero_image_url) {
+        setHeroPreview(data.service_hero_image_url);
+      }
     } catch (err) {
       console.error("Failed to fetch settings", err);
     }
@@ -60,6 +73,14 @@ function AdminServices() {
     setFormData({ ...formData, image: e.target.files[0] });
   };
 
+  const handleHeroImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSettingsData({ ...settingsData, service_hero_image: file });
+      setHeroPreview(URL.createObjectURL(file));
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = new FormData();
@@ -73,13 +94,9 @@ function AdminServices() {
 
     try {
       if (editingService) {
-        await api.patch(`services/${editingService.id}/`, data, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        await api.patch(`services/${editingService.id}/`, data);
       } else {
-        await api.post('services/', data, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        await api.post('services/', data);
       }
       setShowModal(false);
       setEditingService(null);
@@ -116,13 +133,26 @@ function AdminServices() {
   const handleSaveSettings = async (e) => {
     e.preventDefault();
     setIsSavingSettings(true);
+    const data = new FormData();
+    data.append('service_section_subtitle', settingsData.service_section_subtitle);
+    data.append('service_section_title', settingsData.service_section_title);
+    data.append('service_hero_subtitle', settingsData.service_hero_subtitle);
+    data.append('service_hero_title', settingsData.service_hero_title);
+    data.append('service_hero_description', settingsData.service_hero_description);
+    if (settingsData.service_hero_image) {
+      data.append('service_hero_image', settingsData.service_hero_image);
+    }
+
     try {
-      await api.patch('settings/', settingsData);
+      await api.patch('settings/', data);
       setIsSettingsModalOpen(false);
-      // Refresh to ensure site-wide updates
+      // We don't need a reload if we use context, but AdminServices uses local state for settings modal
+      // Let's just update the local state or reload for simplicity as before
       window.location.reload(); 
     } catch (err) {
-      alert("Failed to save settings.");
+      console.error("Failed to save service settings", err);
+      const errorMsg = err.response?.data ? JSON.stringify(err.response.data) : "Failed to save settings. Please try again.";
+      alert(errorMsg);
     } finally {
       setIsSavingSettings(false);
     }
@@ -142,10 +172,10 @@ function AdminServices() {
         <div className="flex items-center gap-3">
           <button 
             onClick={() => setIsSettingsModalOpen(true)}
-            className="p-2.5 bg-card border border-border text-muted-foreground hover:text-primary hover:border-primary/30 rounded-lg shadow-sm transition-all"
-            title="Section Titles Settings"
+            className="flex items-center gap-2 px-4 py-2.5 bg-card border border-border text-foreground hover:text-primary hover:border-primary/30 rounded-xl shadow-sm transition-all font-bold text-[10px] uppercase tracking-widest"
           >
-            <iconify-icon icon="lucide:settings" class="text-xl"></iconify-icon>
+            <iconify-icon icon="lucide:settings" class="text-lg"></iconify-icon>
+            Hero & Titles
           </button>
           <button 
             onClick={() => { setEditingService(null); setFormData({title:'', description:'', features: '', icon: 'lucide:grid-3x3', image:null}); setShowModal(true); }}
@@ -365,60 +395,110 @@ function AdminServices() {
           </div>
         </div>
       )}
-      {/* Service Section Titles Settings Modal */}
+
+      {/* Service Settings Modal (Hero & Section Titles) */}
       {isSettingsModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsSettingsModalOpen(false)}></div>
-          <div className="bg-card border border-border w-full max-w-md rounded-2xl shadow-2xl z-10 overflow-hidden animate-fade-in">
-            <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-muted/30">
-              <h3 className="text-xl font-bold text-foreground">Section Title Settings</h3>
-              <button onClick={() => setIsSettingsModalOpen(false)} className="text-muted-foreground hover:text-foreground p-1">
-                <iconify-icon icon="lucide:x" class="text-2xl"></iconify-icon>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={() => setIsSettingsModalOpen(false)}></div>
+          <div className="relative w-full max-w-3xl bg-card rounded-2xl shadow-2xl animate-scale-in border border-border overflow-hidden max-h-[90vh] flex flex-col">
+            <div className="p-6 border-b border-border flex items-center justify-between bg-muted/30">
+              <div>
+                <h3 className="text-xl font-bold text-foreground">Service Page Settings</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">Customize Hero section and Section titles.</p>
+              </div>
+              <button onClick={() => setIsSettingsModalOpen(false)} className="text-muted-foreground hover:text-foreground transition-colors">
+                <iconify-icon icon="lucide:x" class="text-xl"></iconify-icon>
               </button>
             </div>
             
-            <form onSubmit={handleSaveSettings} className="p-6 space-y-5">
-              <p className="text-xs text-muted-foreground italic mb-2">Update the titles shown in the "Services" section on the Home page.</p>
-              
-              <div>
-                <label className="block text-sm font-bold text-foreground mb-2 uppercase tracking-wider">Section Subtitle (Top)</label>
-                <input 
-                  type="text" 
-                  value={settingsData.service_section_subtitle}
-                  onChange={(e) => setSettingsData({...settingsData, service_section_subtitle: e.target.value})}
-                  className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                  placeholder="e.g. Our Expertise"
-                  required
-                />
+            <form onSubmit={handleSaveSettings} className="p-6 space-y-6 overflow-y-auto">
+              {/* Services Page Hero Section */}
+              <div className="space-y-4">
+                <h4 className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] border-b border-border pb-2">Services Page Hero</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                   <div className="space-y-4">
+                      <div>
+                        <label className="block text-[10px] font-bold text-muted-foreground mb-1.5 uppercase tracking-widest">Hero Subtitle</label>
+                        <input 
+                          type="text" 
+                          value={settingsData.service_hero_subtitle}
+                          onChange={(e) => setSettingsData({...settingsData, service_hero_subtitle: e.target.value})}
+                          className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold text-muted-foreground mb-1.5 uppercase tracking-widest">Hero Title</label>
+                        <input 
+                          type="text" 
+                          value={settingsData.service_hero_title}
+                          onChange={(e) => setSettingsData({...settingsData, service_hero_title: e.target.value})}
+                          className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                        />
+                      </div>
+                   </div>
+                   <div>
+                      <label className="block text-[10px] font-bold text-muted-foreground mb-1.5 uppercase tracking-widest text-center">Hero Background</label>
+                      <div className="relative aspect-video rounded-xl border-2 border-dashed border-border overflow-hidden bg-muted flex items-center justify-center group">
+                        {heroPreview ? (
+                          <img src={heroPreview} className="w-full h-full object-cover" />
+                        ) : (
+                          <iconify-icon icon="lucide:upload" class="text-3xl text-muted-foreground"></iconify-icon>
+                        )}
+                        <input type="file" onChange={handleHeroImageChange} className="absolute inset-0 opacity-0 cursor-pointer" />
+                      </div>
+                   </div>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-muted-foreground mb-1.5 uppercase tracking-widest">Hero Description</label>
+                  <textarea 
+                    value={settingsData.service_hero_description}
+                    onChange={(e) => setSettingsData({...settingsData, service_hero_description: e.target.value})}
+                    rows="2"
+                    className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all resize-none"
+                  ></textarea>
+                </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-bold text-foreground mb-2 uppercase tracking-wider">Main Section Title</label>
-                <input 
-                  type="text" 
-                  value={settingsData.service_section_title}
-                  onChange={(e) => setSettingsData({...settingsData, service_section_title: e.target.value})}
-                  className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                  placeholder="e.g. Bipin Decor Services"
-                  required
-                />
+              {/* Home Page Section Titles */}
+              <div className="space-y-4 pt-4">
+                <h4 className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] border-b border-border pb-2">Home Page Section Titles</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div>
+                    <label className="block text-[10px] font-bold text-muted-foreground mb-1.5 uppercase tracking-widest">Section Subtitle</label>
+                    <input 
+                      type="text" 
+                      value={settingsData.service_section_subtitle}
+                      onChange={(e) => setSettingsData({...settingsData, service_section_subtitle: e.target.value})}
+                      className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-muted-foreground mb-1.5 uppercase tracking-widest">Section Title</label>
+                    <input 
+                      type="text" 
+                      value={settingsData.service_section_title}
+                      onChange={(e) => setSettingsData({...settingsData, service_section_title: e.target.value})}
+                      className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="pt-4 flex gap-3">
                 <button 
                   type="button" 
                   onClick={() => setIsSettingsModalOpen(false)}
-                  className="flex-1 py-3 px-4 bg-muted text-foreground font-bold rounded-xl hover:bg-border transition-all"
+                  className="flex-1 py-3 border border-border text-foreground font-bold uppercase tracking-widest text-[10px] rounded-xl hover:bg-muted transition-all"
                 >
                   Cancel
                 </button>
                 <button 
                   type="submit" 
                   disabled={isSavingSettings}
-                  className="flex-1 py-3 px-4 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg hover:bg-secondary transition-all flex items-center justify-center gap-2 disabled:opacity-70"
+                  className="flex-1 py-3 bg-primary text-primary-foreground font-bold uppercase tracking-widest text-[10px] rounded-xl hover:bg-primary/90 transition-all shadow-lg flex items-center justify-center gap-2 disabled:opacity-70"
                 >
-                  {isSavingSettings && <iconify-icon icon="lucide:loader-2" class="animate-spin"></iconify-icon>}
-                  Save Changes
+                  {isSavingSettings && <iconify-icon icon="lucide:loader-2" class="animate-spin text-lg"></iconify-icon>}
+                  Save All Settings
                 </button>
               </div>
             </form>

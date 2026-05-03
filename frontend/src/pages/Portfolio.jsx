@@ -58,6 +58,14 @@ function Portfolio() {
         setCurrentPage(1);
     }, [activeCategory]);
 
+    // Truncate words helper
+    const truncateWords = (text, limit) => {
+        if (!text) return "";
+        const words = text.split(" ");
+        if (words.length <= limit) return text;
+        return words.slice(0, limit).join(" ") + "...";
+    };
+
     const filteredProjects = activeCategory === 'all'
         ? projects
         : projects.filter(p => p.category_slug === activeCategory || p.category === parseInt(activeCategory));
@@ -412,7 +420,7 @@ function Portfolio() {
                                                             ))}
                                                         </div>
                                                     </div>
-                                                    <p className="text-xs text-muted-foreground italic leading-relaxed">"{review.comment}"</p>
+                                                    <p className="text-xs text-muted-foreground italic leading-relaxed">"{truncateWords(review.comment, 20)}"</p>
                                                     <p className="text-[9px] text-muted-foreground/50 mt-2 uppercase">{new Date(review.created_at).toLocaleDateString()}</p>
                                                 </div>
                                             ))

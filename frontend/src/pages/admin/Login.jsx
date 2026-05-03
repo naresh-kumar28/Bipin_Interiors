@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useSiteSettings } from '../../context/SiteContext';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -8,6 +9,7 @@ function Login() {
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login } = useAuth();
+  const { settings } = useSiteSettings();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -38,10 +40,16 @@ function Login() {
       
       <div className="z-10 w-full max-w-md px-6">
         <div className="flex flex-col items-center mb-8 animate-fade-in">
-          <div className="w-16 h-16 bg-primary rounded-xl flex items-center justify-center shadow-lg mb-4">
-            <iconify-icon icon="lucide:sofa" class="text-3xl text-primary-foreground"></iconify-icon>
+          <div className="w-16 h-16 bg-primary rounded-xl flex items-center justify-center shadow-lg mb-4 overflow-hidden p-2">
+            {settings?.logo ? (
+              <img src={settings.logo} alt={settings.website_name} className="w-full h-full object-contain" />
+            ) : (
+              <iconify-icon icon="lucide:sofa" class="text-3xl text-primary-foreground"></iconify-icon>
+            )}
           </div>
-          <h1 className="text-3xl font-heading font-bold text-foreground">Bipin Decor</h1>
+          <h1 className="text-3xl font-heading font-bold text-foreground text-center">
+            {settings?.website_name || 'Bipin Decor'}
+          </h1>
           <p className="text-muted-foreground text-sm tracking-wide uppercase mt-1">Admin Portal</p>
         </div>
 
@@ -123,7 +131,7 @@ function Login() {
         </div>
         
         <p className="text-center text-xs text-muted-foreground mt-8">
-          &copy; 2026 Bipin Decor Admin. All rights reserved.
+          &copy; {new Date().getFullYear()} {settings?.website_name || 'Bipin Decor'} Admin. All rights reserved.
         </p>
       </div>
     </div>

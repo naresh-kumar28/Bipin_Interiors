@@ -25,10 +25,19 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 class CategorySerializer(serializers.ModelSerializer):
     project_images = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
 
     class Meta:
         model = Category
         fields = '__all__'
+
+    def get_image(self, obj):
+        if obj.image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.image.url)
+            return obj.image.url
+        return None
 
     def get_project_images(self, obj):
         projects = obj.projects.all()[:4]
@@ -43,9 +52,19 @@ class CategorySerializer(serializers.ModelSerializer):
         return images
 
 class ServiceSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
     class Meta:
         model = Service
         fields = '__all__'
+
+    def get_image(self, obj):
+        if obj.image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.image.url)
+            return obj.image.url
+        return None
 
 class ProjectReviewSerializer(serializers.ModelSerializer):
     project_title = serializers.ReadOnlyField(source='project.title')
@@ -90,6 +109,12 @@ class SiteSettingSerializer(serializers.ModelSerializer):
     cta_image_url = serializers.SerializerMethodField()
     hero_video_url = serializers.SerializerMethodField()
     hero_image_url = serializers.SerializerMethodField()
+    about_hero_image_url = serializers.SerializerMethodField()
+    about_story_image_url = serializers.SerializerMethodField()
+    about_expertise_image1_url = serializers.SerializerMethodField()
+    about_expertise_image2_url = serializers.SerializerMethodField()
+    contact_hero_image_url = serializers.SerializerMethodField()
+    service_hero_image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = SiteSetting
@@ -125,6 +150,54 @@ class SiteSettingSerializer(serializers.ModelSerializer):
             if request:
                 return request.build_absolute_uri(obj.hero_background_image.url)
             return obj.hero_background_image.url
+        return None
+
+    def get_about_hero_image_url(self, obj):
+        if obj.about_hero_image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.about_hero_image.url)
+            return obj.about_hero_image.url
+        return None
+
+    def get_about_story_image_url(self, obj):
+        if obj.about_story_image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.about_story_image.url)
+            return obj.about_story_image.url
+        return None
+
+    def get_about_expertise_image1_url(self, obj):
+        if obj.about_expertise_image1:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.about_expertise_image1.url)
+            return obj.about_expertise_image1.url
+        return None
+
+    def get_about_expertise_image2_url(self, obj):
+        if obj.about_expertise_image2:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.about_expertise_image2.url)
+            return obj.about_expertise_image2.url
+        return None
+
+    def get_contact_hero_image_url(self, obj):
+        if obj.contact_hero_image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.contact_hero_image.url)
+            return obj.contact_hero_image.url
+        return None
+
+    def get_service_hero_image_url(self, obj):
+        if obj.service_hero_image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.service_hero_image.url)
+            return obj.service_hero_image.url
         return None
 
 class WhyChooseUsSerializer(serializers.ModelSerializer):

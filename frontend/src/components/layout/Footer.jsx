@@ -109,7 +109,7 @@ function Footer() {
                 className="max-w-7xl mx-auto pt-6 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4 text-xs sm:text-sm text-muted-foreground">
                 <p>&copy; {new Date().getFullYear()} {settings?.website_name || "Bipin Decors"}. All rights reserved.</p>
                 <p className="flex items-center gap-1.5">
-                    Designed with <Heart className="text-primary w-4 h-4 fill-primary/20" /> by LearnSyntax
+                    Designed with <Heart className="text-primary w-4 h-4 fill-primary/20" /> by Naresh Kumar
                 </p>
             </div>
         </footer>

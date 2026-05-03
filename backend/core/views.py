@@ -165,10 +165,10 @@ class ProjectReviewViewSet(viewsets.ModelViewSet):
         project.recalculate_rating()
         return response
 
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 class SiteSettingAPIView(APIView):
-    parser_classes = (MultiPartParser, FormParser)
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
     
     def get_permissions(self):
         if self.request.method in ['POST', 'PUT', 'PATCH']:
