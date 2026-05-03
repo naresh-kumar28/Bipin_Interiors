@@ -15,10 +15,31 @@ function Categories() {
   const [imagePreview, setImagePreview] = useState(null);
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Settings Edit States
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [settingsData, setSettingsData] = useState({
+    category_section_subtitle: '',
+    category_section_title: ''
+  });
+  const [isSavingSettings, setIsSavingSettings] = useState(false);
 
   useEffect(() => {
     fetchCategories();
+    fetchSettings();
   }, []);
+
+  const fetchSettings = async () => {
+    try {
+      const response = await api.get('settings/');
+      setSettingsData({
+        category_section_subtitle: response.data.category_section_subtitle || 'Explore Spaces',
+        category_section_title: response.data.category_section_title || 'Design by Category'
+      });
+    } catch (err) {
+      console.error("Failed to fetch settings", err);
+    }
+  };
 
   const fetchCategories = async () => {
     try {
@@ -108,6 +129,21 @@ function Categories() {
     }
   };
 
+  const handleSaveSettings = async (e) => {
+    e.preventDefault();
+    setIsSavingSettings(true);
+    try {
+      await api.patch('settings/', settingsData);
+      setIsSettingsModalOpen(false);
+      // Refresh to ensure site-wide updates
+      window.location.reload(); 
+    } catch (err) {
+      alert("Failed to save settings.");
+    } finally {
+      setIsSavingSettings(false);
+    }
+  };
+
   const filteredCategories = categories.filter(c => 
     c.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -121,6 +157,13 @@ function Categories() {
           <p className="text-muted-foreground text-sm mt-1">Organize your services and portfolio into groups.</p>
         </div>
         <div className="flex items-center gap-3">
+          <button 
+            onClick={() => setIsSettingsModalOpen(true)}
+            className="p-2.5 bg-card border border-border text-muted-foreground hover:text-primary hover:border-primary/30 rounded-lg shadow-sm transition-all"
+            title="Section Titles Settings"
+          >
+            <iconify-icon icon="lucide:settings" class="text-xl"></iconify-icon>
+          </button>
           <button 
             onClick={() => handleOpenModal()}
             className="px-4 py-2 bg-primary text-primary-foreground rounded-lg shadow-md hover:bg-secondary font-medium text-sm flex items-center gap-2 transition-all transform hover:-translate-y-1"
@@ -300,6 +343,66 @@ function Categories() {
                 >
                   {isSubmitting && <iconify-icon icon="lucide:loader-2" class="animate-spin"></iconify-icon>}
                   {editingCategory ? 'Update Category' : 'Create Category'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {/* Category Section Titles Settings Modal */}
+      {isSettingsModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsSettingsModalOpen(false)}></div>
+          <div className="bg-card border border-border w-full max-w-md rounded-2xl shadow-2xl z-10 overflow-hidden animate-fade-in">
+            <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-muted/30">
+              <h3 className="text-xl font-bold text-foreground">Section Title Settings</h3>
+              <button onClick={() => setIsSettingsModalOpen(false)} className="text-muted-foreground hover:text-foreground p-1">
+                <iconify-icon icon="lucide:x" class="text-2xl"></iconify-icon>
+              </button>
+            </div>
+            
+            <form onSubmit={handleSaveSettings} className="p-6 space-y-5">
+              <p className="text-xs text-muted-foreground italic mb-2">Update the titles shown in the "Category" section on the Home page.</p>
+              
+              <div>
+                <label className="block text-sm font-bold text-foreground mb-2 uppercase tracking-wider">Section Subtitle (Top)</label>
+                <input 
+                  type="text" 
+                  value={settingsData.category_section_subtitle}
+                  onChange={(e) => setSettingsData({...settingsData, category_section_subtitle: e.target.value})}
+                  className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+                  placeholder="e.g. Explore Spaces"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-foreground mb-2 uppercase tracking-wider">Main Section Title</label>
+                <input 
+                  type="text" 
+                  value={settingsData.category_section_title}
+                  onChange={(e) => setSettingsData({...settingsData, category_section_title: e.target.value})}
+                  className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+                  placeholder="e.g. Design by Category"
+                  required
+                />
+              </div>
+
+              <div className="pt-4 flex gap-3">
+                <button 
+                  type="button" 
+                  onClick={() => setIsSettingsModalOpen(false)}
+                  className="flex-1 py-3 px-4 bg-muted text-foreground font-bold rounded-xl hover:bg-border transition-all"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={isSavingSettings}
+                  className="flex-1 py-3 px-4 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg hover:bg-secondary transition-all flex items-center justify-center gap-2 disabled:opacity-70"
+                >
+                  {isSavingSettings && <iconify-icon icon="lucide:loader-2" class="animate-spin"></iconify-icon>}
+                  Save Changes
                 </button>
               </div>
             </form>

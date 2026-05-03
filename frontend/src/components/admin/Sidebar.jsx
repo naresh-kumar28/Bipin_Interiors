@@ -32,7 +32,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     <>
       {/* Mobile Overlay */}
       {isOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={toggleSidebar}
         ></div>
@@ -52,18 +52,17 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             <iconify-icon icon="lucide:x" class="text-xl"></iconify-icon>
           </button>
         </div>
-        
+
         <div className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
           {menuItems.map((item) => (
             <Link
               key={item.name}
               to={item.path}
               onClick={() => { if (window.innerWidth < 1024) toggleSidebar(); }}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${
-                isActive(item.path)
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${isActive(item.path)
                   ? 'bg-primary/10 text-primary border-l-4 border-primary'
                   : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-              }`}
+                }`}
             >
               <iconify-icon icon={item.icon.replace('lucify', 'lucide')} class="text-lg"></iconify-icon>
               {item.name}
@@ -74,30 +73,29 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               )}
             </Link>
           ))}
-          
+
           <div className="pt-4 pb-2">
             <p className="px-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">System</p>
           </div>
-          
+
           {systemItems.map((item) => (
             <Link
               key={item.name}
               to={item.path}
               onClick={() => { if (window.innerWidth < 1024) toggleSidebar(); }}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${
-                isActive(item.path)
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${isActive(item.path)
                   ? 'bg-primary/10 text-primary border-l-4 border-primary'
                   : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-              }`}
+                }`}
             >
               <iconify-icon icon={item.icon.replace('lucify', 'lucide')} class="text-lg"></iconify-icon>
               {item.name}
             </Link>
           ))}
         </div>
-        
+
         <div className="p-4 border-t border-border">
-          <button 
+          <button
             onClick={logout}
             className="flex items-center gap-3 px-3 py-2.5 w-full text-muted-foreground hover:bg-destructive/10 hover:text-destructive rounded-lg font-medium transition-colors"
           >

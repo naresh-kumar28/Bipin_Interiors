@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import api from '../api/api';
 import CategoryCard from '../components/CategoryCard';
 import BookingModal from '../components/BookingModal';
+import { useSiteSettings } from '../context/SiteContext';
 
-import { 
+import {
     livingRoom, bedroom, kitchen, office, lobby, hall,
     uvMarbleSheet, pvcPaneling, falseCeiling, wpcLouvers, customFurniture, homeRenovation,
     craftsmanship, transformSpace
@@ -12,6 +14,7 @@ import {
 import heroVideo from "../assets/video.mp4";
 
 function Home() {
+    const { settings } = useSiteSettings();
     const [categories, setCategories] = useState([]);
     const [services, setServices] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -67,7 +70,12 @@ function Home() {
                 <div className="absolute inset-0 bg-black/50 z-10"></div>
 
                 {/* Content */}
-                <div className="relative z-20 text-center px-6 max-w-3xl mx-auto">
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8 }}
+                    className="relative z-20 text-center px-6 max-w-3xl mx-auto"
+                >
 
                     {/* Tagline */}
                     <span className="text-amber-400 tracking-[0.25em] uppercase text-xs md:text-sm mb-6 block font-medium">
@@ -89,7 +97,7 @@ function Home() {
                     <div className="flex flex-col sm:flex-row gap-5 justify-center items-center">
 
                         {/* Primary Button */}
-                        <button 
+                        <button
                             onClick={() => setIsBookingModalOpen(true)}
                             className="group inline-flex items-center gap-3 px-8 py-3 border border-amber-400 text-amber-400 hover:bg-amber-400 hover:text-black transition-all duration-300 text-xs tracking-[0.2em] uppercase"
                         >
@@ -100,7 +108,7 @@ function Home() {
 
                     </div>
 
-                </div>
+                </motion.div>
             </section>
 
             {/* Categories Section */}
@@ -111,10 +119,10 @@ function Home() {
                             <div>
                                 <span
                                     className="text-primary text-sm font-bold uppercase tracking-widest mb-1 block animate-fade-in">
-                                    Explore Spaces
+                                    {settings?.category_section_subtitle || 'Explore Spaces'}
                                 </span>
                                 <h2 className="text-3xl md:text-5xl font-heading font-bold text-foreground leading-tight">
-                                    Design by Category
+                                    {settings?.category_section_title || 'Design by Category'}
                                 </h2>
                             </div>
                         </div>
@@ -133,20 +141,37 @@ function Home() {
             {/* Services Section */}
             <section className="py-16 md:py-24 px-6 bg-muted/30">
                 <div className="max-w-7xl mx-auto">
-                    <div className="mb-12">
-                        <span className="text-primary text-sm font-bold uppercase tracking-widest">Our Expertise</span>
-                        <h2 className="text-3xl md:text-5xl font-heading font-bold mt-3 text-foreground">Bipin Decor Services</h2>
-                    </div>
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
+                        className="mb-12"
+                    >
+                        <span className="text-primary text-sm font-bold uppercase tracking-widest">
+                            {settings?.service_section_subtitle || 'Our Expertise'}
+                        </span>
+                        <h2 className="text-3xl md:text-5xl font-heading font-bold mt-3 text-foreground">
+                            {settings?.service_section_title || 'Bipin Decor Services'}
+                        </h2>
+                    </motion.div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-                        {services.length > 0 ? services.slice(0, 6).map((service) => (
-                            <div
+                        {services.length > 0 ? services.slice(0, 6).map((service, index) => (
+                            <motion.div
                                 key={service.id}
-                                className="group bg-card rounded-2xl shadow-sm hover:shadow-xl transition-all border border-border overflow-hidden flex flex-col h-full">
-                                <div className="relative h-48 sm:h-56 overflow-hidden">
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.5, delay: index * 0.1 }}
+                                className="group bg-card rounded-2xl shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-700 border border-border overflow-hidden flex flex-col h-full"
+                            >
+                                <div className="relative h-48 sm:h-56 overflow-hidden bg-muted">
                                     <img src={service.image}
                                         alt={service.title}
-                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                                        loading="lazy"
+                                        onLoad={(e) => e.target.classList.add('opacity-100')}
+                                        className="w-full h-full object-cover transition-all duration-1000 opacity-0 group-hover:scale-110" />
                                 </div>
                                 <div className="p-6 flex flex-col flex-grow">
                                     <h3 className="text-2xl font-bold mb-2">{service.title}</h3>
@@ -158,7 +183,7 @@ function Home() {
                                         View Service
                                     </Link>
                                 </div>
-                            </div>
+                            </motion.div>
                         )) : (
                             <div className="col-span-full text-center py-10">
                                 <p className="text-muted-foreground italic">Adding our premium services soon...</p>
@@ -188,6 +213,7 @@ function Home() {
                         <div
                             className="relative aspect-[4/3] lg:aspect-square overflow-hidden rounded-2xl shadow-xl transition-transform duration-700 group-hover:scale-[1.02]">
                             <img src={craftsmanship} alt="Craftsmanship"
+                                loading="lazy"
                                 className="w-full h-full object-cover" />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                         </div>
@@ -385,6 +411,7 @@ function Home() {
 
                                 <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=200&auto=format&fit=crop"
                                     alt="Amit Sharma"
+                                    loading="lazy"
                                     className="w-24 h-24 rounded-full object-cover absolute -top-12 left-1/2 -translate-x-1/2 border-8 border-card shadow-md" />
 
                                 <h4 className="text-xl font-semibold text-foreground mt-1">Amit Sharma</h4>
@@ -416,6 +443,7 @@ function Home() {
                                 </iconify-icon>
                                 <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=200&auto=format&fit=crop"
                                     alt="Priya Kapoor"
+                                    loading="lazy"
                                     className="w-24 h-24 rounded-full object-cover absolute -top-12 left-1/2 -translate-x-1/2 border-8 border-card shadow-md" />
                                 <h4 className="text-xl font-semibold text-foreground mt-1">Priya Kapoor</h4>
                                 <p className="text-sm text-amber-600 font-medium mb-4">Commercial Client</p>
@@ -444,6 +472,7 @@ function Home() {
                                 </iconify-icon>
                                 <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=200&auto=format&fit=crop"
                                     alt="Rahul Mehta"
+                                    loading="lazy"
                                     className="w-24 h-24 rounded-full object-cover absolute -top-12 left-1/2 -translate-x-1/2 border-8 border-card shadow-md" />
                                 <h4 className="text-xl font-semibold text-foreground mt-1">Rahul Mehta</h4>
                                 <p className="text-sm text-amber-600 font-medium mb-4">Home Owner</p>
@@ -478,7 +507,7 @@ function Home() {
                     <p className="text-lg text-white/80 mb-10 font-light max-w-xl mx-auto">
                         Book a consultation with our experts today and take the first step towards your dream Decor.
                     </p>
-                    <button 
+                    <button
                         onClick={() => setIsBookingModalOpen(true)}
                         className="inline-block px-10 py-5 bg-primary text-primary-foreground font-bold uppercase tracking-widest text-sm rounded-sm hover:bg-card hover:text-secondary transition-all shadow-lg hover:shadow-xl">
                         Schedule Consultation
@@ -487,9 +516,9 @@ function Home() {
             </section>
 
             {/* Modals */}
-            <BookingModal 
-                isOpen={isBookingModalOpen} 
-                onClose={() => setIsBookingModalOpen(false)} 
+            <BookingModal
+                isOpen={isBookingModalOpen}
+                onClose={() => setIsBookingModalOpen(false)}
             />
 
         </main>

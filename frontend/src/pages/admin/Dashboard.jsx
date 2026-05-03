@@ -30,7 +30,7 @@ function formatRelativeTime(dateString) {
   const date = new Date(dateString);
   const now = new Date();
   const diffInSeconds = Math.floor((now - date) / 1000);
-  
+
   if (diffInSeconds < 60) return 'Just now';
   const diffInMinutes = Math.floor(diffInSeconds / 60);
   if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
@@ -125,7 +125,7 @@ function Dashboard() {
             <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest mb-1">Total Enquiries</p>
             <h3 className="text-2xl font-heading font-bold text-foreground">{stats?.stats?.total_enquiries || 0}</h3>
             <p className="text-xs font-medium mt-2 flex items-center gap-1 text-emerald-500">
-               Live from website
+              Live from website
             </p>
           </div>
           <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
@@ -236,7 +236,7 @@ function Dashboard() {
 
       {/* Tables Section - Styled according to Reference */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        
+
         {/* Recent Enquiries Table (Reference Style) */}
         <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
           <div className="p-6 border-b border-border flex items-center justify-between">
@@ -264,12 +264,11 @@ function Dashboard() {
                         {enquiry.title || 'General Enquiry'}
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-wide ${
-                          enquiry.status === 'Pending' ? 'bg-blue-100 text-blue-600' : 
-                          enquiry.status === 'Contacted' ? 'bg-amber-100 text-amber-600' : 
-                          enquiry.status === 'In Progress' ? 'bg-purple-100 text-purple-600' :
-                          'bg-emerald-100 text-emerald-600'
-                        }`}>
+                        <span className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-wide ${enquiry.status === 'Pending' ? 'bg-blue-100 text-blue-600' :
+                            enquiry.status === 'Contacted' ? 'bg-amber-100 text-amber-600' :
+                              enquiry.status === 'In Progress' ? 'bg-purple-100 text-purple-600' :
+                                'bg-emerald-100 text-emerald-600'
+                          }`}>
                           {enquiry.status === 'Pending' ? 'New' : enquiry.status}
                         </span>
                       </td>
@@ -295,17 +294,16 @@ function Dashboard() {
             {stats?.recent_bookings?.length > 0 ? (
               stats.recent_bookings.map((booking) => (
                 <div key={booking.id} className="p-6 flex items-start gap-5 hover:bg-muted/20 transition-colors group">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${
-                    booking.service_name?.includes('Marble') ? 'bg-orange-50 text-orange-500' :
-                    booking.service_name?.includes('Bedroom') ? 'bg-stone-50 text-stone-500' :
-                    'bg-amber-50 text-amber-500'
-                  }`}>
-                    <iconify-icon 
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${booking.service_name?.includes('Marble') ? 'bg-orange-50 text-orange-500' :
+                      booking.service_name?.includes('Bedroom') ? 'bg-stone-50 text-stone-500' :
+                        'bg-amber-50 text-amber-500'
+                    }`}>
+                    <iconify-icon
                       icon={
                         booking.service_name?.includes('Marble') ? 'lucide:map-pin' :
-                        booking.service_name?.includes('Bedroom') ? 'lucide:users' :
-                        'lucide:ruler'
-                      } 
+                          booking.service_name?.includes('Bedroom') ? 'lucide:users' :
+                            'lucide:ruler'
+                      }
                       class="text-xl"
                     ></iconify-icon>
                   </div>
@@ -314,8 +312,8 @@ function Dashboard() {
                       {booking.service_name ? `${booking.service_name} Measurement` : 'Site Visit / Consultation'}
                     </h4>
                     <p className="text-[11px] text-muted-foreground mt-1 font-medium">
-                      {new Date(booking.consultation_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}, {booking.consultation_time} 
-                      <span className="mx-2">•</span> 
+                      {new Date(booking.consultation_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}, {booking.consultation_time}
+                      <span className="mx-2">•</span>
                       Assigned to: <span className="text-foreground">Staff</span>
                     </p>
                   </div>
@@ -326,8 +324,8 @@ function Dashboard() {
               ))
             ) : (
               <div className="flex-1 flex flex-col items-center justify-center py-12 text-muted-foreground">
-                 <iconify-icon icon="lucide:calendar-x" class="text-4xl opacity-20 mb-3"></iconify-icon>
-                 <p className="text-sm italic">No bookings scheduled yet</p>
+                <iconify-icon icon="lucide:calendar-x" class="text-4xl opacity-20 mb-3"></iconify-icon>
+                <p className="text-sm italic">No bookings scheduled yet</p>
               </div>
             )}
           </div>

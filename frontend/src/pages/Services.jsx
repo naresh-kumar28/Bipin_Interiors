@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import api from '../api/api'
 import { servicesHero, transformSpace } from '../assets/images'
 import BookingModal from '../components/BookingModal'
@@ -82,12 +83,34 @@ function Services() {
                     className="absolute inset-0 opacity-10 bg-cover bg-center">
                 </div>
                 <div className="max-w-3xl mx-auto relative z-10">
-                    <span className="text-primary text-sm font-bold uppercase tracking-widest mb-4 block">What We Do</span>
-                    <h1 className="text-4xl md:text-6xl font-bold mb-6">Our Premium Services</h1>
-                    <p className="text-lg text-white/80 font-light max-w-xl mx-auto">
+                    <motion.span 
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
+                        className="text-primary text-sm font-bold uppercase tracking-widest mb-4 block"
+                    >
+                        What We Do
+                    </motion.span>
+                    <motion.h1 
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6, delay: 0.1 }}
+                        className="text-4xl md:text-6xl font-bold mb-6"
+                    >
+                        Our Premium Services
+                    </motion.h1>
+                    <motion.p 
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6, delay: 0.2 }}
+                        className="text-lg text-white/80 font-light max-w-xl mx-auto"
+                    >
                         Expert installations and bespoke finishes designed to elevate your living and working
                         environments.
-                    </p>
+                    </motion.p>
                 </div>
             </section>
 
@@ -99,15 +122,22 @@ function Services() {
                             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
                         </div>
                     ) : services.length > 0 ? services.map((service, index) => (
-                        <div 
+                        <motion.div 
                             key={service.id} 
                             id={`service-${service.id}`}
+                            initial={{ opacity: 0, y: 50 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, margin: "-100px" }}
+                            transition={{ duration: 0.8 }}
                             className={`flex flex-col ${index % 2 === 1 ? 'lg:flex-row-reverse' : 'lg:flex-row'} items-center gap-16 scroll-mt-24`}
                         >
                             <div className="w-full lg:w-1/2 relative">
-                                <div className="aspect-[4/3] overflow-hidden rounded-sm bg-muted shadow-lg">
+                                <div className="aspect-[4/3] overflow-hidden rounded-sm bg-muted shadow-lg group/img">
                                     <img src={service.image}
-                                        alt={service.title} className="w-full h-full object-cover" />
+                                        alt={service.title} 
+                                        loading="lazy"
+                                        onLoad={(e) => e.target.classList.add('opacity-100')}
+                                        className="w-full h-full object-cover transition-all duration-1000 opacity-0 group-hover/img:scale-110" />
                                 </div>
                                 <div
                                     className={`absolute ${index % 2 === 1 ? '-top-6 -left-6' : '-bottom-6 -right-6'} w-32 h-32 bg-primary/10 rounded-full border border-primary/20 -z-10`}>
@@ -147,7 +177,7 @@ function Services() {
                                     Request Quote
                                 </button>
                             </div>
-                        </div>
+                        </motion.div>
                     )) : (
                         <div className="py-20 text-center">
                             <p className="text-muted-foreground italic">Adding our services soon...</p>

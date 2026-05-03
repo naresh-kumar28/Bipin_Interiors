@@ -131,6 +131,12 @@ class SiteSetting(models.Model):
     seo_description = models.TextField(blank=True)
     seo_keywords = models.TextField(blank=True)
     
+    # Section Titles
+    category_section_subtitle = models.CharField(max_length=200, default='Explore Spaces')
+    category_section_title = models.CharField(max_length=200, default='Design by Category')
+    service_section_subtitle = models.CharField(max_length=200, default='Our Expertise')
+    service_section_title = models.CharField(max_length=200, default='Bipin Decor Services')
+    
     # Theme
     primary_color = models.CharField(max_length=20, blank=True, default='#C5A059')
 

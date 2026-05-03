@@ -84,6 +84,11 @@ class ProjectRequestViewSet(viewsets.ModelViewSet):
             return [AllowAny()]
         return [IsAdminUser()]
 
+    @action(detail=False, methods=['get'])
+    def stats(self, request):
+        pending_count = ProjectRequest.objects.filter(status='Pending').count()
+        return Response({'pending_count': pending_count})
+
 class ServiceRequestViewSet(viewsets.ModelViewSet):
     queryset = ServiceRequest.objects.all().order_by('-created_at')
     serializer_class = ServiceRequestSerializer

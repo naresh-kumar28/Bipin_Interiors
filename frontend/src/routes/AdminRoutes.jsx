@@ -19,7 +19,7 @@ const AdminRoutes = () => {
         <Route element={<AdminLayout />}>
           {/* Default admin route redirects to dashboard */}
           <Route index element={<Navigate to="dashboard" replace />} />
-          
+
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="enquiries" element={<Enquiries />} />
           <Route path="portfolio" element={<AdminPortfolio />} />
@@ -33,7 +33,7 @@ const AdminRoutes = () => {
           <Route path="pages" element={<PlaceholderPage title="Pages Management" />} />
           <Route path="users" element={<PlaceholderPage title="Users & Admins" />} />
           <Route path="reports" element={<PlaceholderPage title="Reports & Analytics" />} />
-          
+
           {/* Catch-all for /admin/* */}
           <Route path="*" element={<PlaceholderPage title="404" />} />
         </Route>

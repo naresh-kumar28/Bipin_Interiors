@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
 import api from '../api/api'
 import { portfolioHero } from '../assets/images'
 
@@ -13,6 +14,11 @@ function Portfolio() {
     const [selectedProject, setSelectedProject] = useState(null);
     const [showRequestModal, setShowRequestModal] = useState(false);
     const [showReviewForm, setShowReviewForm] = useState(false);
+
+    // Load More State
+    const [currentPage, setCurrentPage] = useState(1);
+    const ITEMS_PER_PAGE = 6;
+    const loaderRef = useRef(null);
 
     const [requestData, setRequestData] = useState({
         user_name: '',
@@ -48,9 +54,38 @@ function Portfolio() {
         fetchData();
     }, []);
 
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [activeCategory]);
+
     const filteredProjects = activeCategory === 'all'
         ? projects
-        : projects.filter(p => p.category_name.toLowerCase() === activeCategory.toLowerCase() || p.category === parseInt(activeCategory));
+        : projects.filter(p => p.category_slug === activeCategory || p.category === parseInt(activeCategory));
+
+    // Infinite Scroll Logic
+    const hasMore = currentPage * ITEMS_PER_PAGE < filteredProjects.length;
+    const currentProjects = filteredProjects.slice(0, currentPage * ITEMS_PER_PAGE);
+
+    const handleObserver = useCallback((entries) => {
+        const target = entries[0];
+        if (target.isIntersecting && hasMore) {
+            setCurrentPage((prev) => prev + 1);
+        }
+    }, [hasMore]);
+
+    useEffect(() => {
+        const option = {
+            root: null,
+            rootMargin: "20px",
+            threshold: 0
+        };
+        const observer = new IntersectionObserver(handleObserver, option);
+        if (loaderRef.current) observer.observe(loaderRef.current);
+        
+        return () => {
+            if (loaderRef.current) observer.unobserve(loaderRef.current);
+        };
+    }, [handleObserver]);
 
     const handleRate = async (projectId, rating) => {
         try {
@@ -127,11 +162,33 @@ function Portfolio() {
                     className="absolute inset-0 opacity-10 bg-cover bg-center">
                 </div>
                 <div className="max-w-3xl mx-auto relative z-10">
-                    <span className="text-primary text-sm font-bold uppercase tracking-widest mb-4 block">Our Masterpieces</span>
-                    <h1 className="text-4xl md:text-6xl font-heading font-bold mb-6">Work Gallery</h1>
-                    <p className="text-lg text-white/80 font-light max-w-xl mx-auto">
+                    <motion.span 
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
+                        className="text-primary text-sm font-bold uppercase tracking-widest mb-4 block"
+                    >
+                        Our Masterpieces
+                    </motion.span>
+                    <motion.h1 
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6, delay: 0.1 }}
+                        className="text-4xl md:text-6xl font-heading font-bold mb-6"
+                    >
+                        Work Gallery
+                    </motion.h1>
+                    <motion.p 
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6, delay: 0.2 }}
+                        className="text-lg text-white/80 font-light max-w-xl mx-auto"
+                    >
                         Explore our curated portfolio of stunning transformations and bespoke installations.
-                    </p>
+                    </motion.p>
                 </div>
             </section>
 
@@ -162,44 +219,75 @@ function Portfolio() {
                             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
                         </div>
                     ) : filteredProjects.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {filteredProjects.map((project) => (
-                                <div
-                                    key={project.id}
-                                    className="group relative overflow-hidden rounded-xl shadow-lg aspect-[4/3] bg-muted cursor-pointer transition-all duration-500 hover:shadow-2xl"
-                                    onClick={() => setSelectedProject(project)}
-                                >
-                                    <img
-                                        src={project.image}
-                                        alt={project.title}
-                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <div className="space-y-12">
+                            <motion.div 
+                                layout
+                                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                            >
+                                <AnimatePresence mode="popLayout">
+                                    {currentProjects.map((project, index) => (
+                                        <motion.div
+                                            layout
+                                            initial={{ opacity: 0, scale: 0.9, y: 30 }}
+                                            whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                                            viewport={{ once: true, margin: "-50px" }}
+                                            transition={{ 
+                                                duration: 0.5, 
+                                                delay: (index % 3) * 0.1,
+                                                type: "spring",
+                                                stiffness: 100
+                                            }}
+                                            key={project.id}
+                                            className="group relative overflow-hidden rounded-xl shadow-lg aspect-[4/3] bg-muted cursor-pointer transition-all duration-700 hover:shadow-2xl hover:-translate-y-2 border border-border/50 hover:border-primary/20"
+                                            onClick={() => setSelectedProject(project)}
+                                        >
+                                            <img
+                                                src={project.image}
+                                                alt={project.title}
+                                                loading="lazy"
+                                                onLoad={(e) => e.target.classList.add('opacity-100')}
+                                                className="w-full h-full object-cover transition-all duration-1000 opacity-0 group-hover:scale-110"
+                                            />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-                                    <div className="absolute inset-0 p-6 flex flex-col justify-end text-white">
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <span className="bg-primary/90 text-primary-foreground text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm">
-                                                {project.category_name}
-                                            </span>
-                                            <div className="flex items-center text-amber-400 text-xs">
-                                                <iconify-icon icon="material-symbols:star" class="fill-current"></iconify-icon>
-                                                <span className="ml-1 font-bold">{parseFloat(project.rating).toFixed(1)}</span>
-                                                <span className="ml-1 text-[10px] text-white/60">({project.rating_count})</span>
+                                            <div className="absolute inset-0 p-6 flex flex-col justify-end text-white">
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <span className="bg-primary/90 text-primary-foreground text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm">
+                                                        {project.category_name}
+                                                    </span>
+                                                    <div className="flex items-center text-amber-400 text-xs">
+                                                        <iconify-icon icon="material-symbols:star" class="fill-current"></iconify-icon>
+                                                        <span className="ml-1 font-bold">{parseFloat(project.rating).toFixed(1)}</span>
+                                                        <span className="ml-1 text-[10px] text-white/60">({project.rating_count})</span>
+                                                    </div>
+                                                </div>
+                                                <h3 className="text-xl font-heading font-bold mb-1 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                                                    {project.title}
+                                                </h3>
+                                                <p className="text-xs text-white/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100 line-clamp-1">
+                                                    {project.description}
+                                                </p>
                                             </div>
-                                        </div>
-                                        <h3 className="text-xl font-heading font-bold mb-1 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                                            {project.title}
-                                        </h3>
-                                        <p className="text-xs text-white/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100 line-clamp-1">
-                                            {project.description}
-                                        </p>
-                                    </div>
 
-                                    <div className="absolute top-4 right-4 w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 scale-50 group-hover:scale-100 border border-white/30">
-                                        <iconify-icon icon="lucide:maximize" className="text-white text-xl"></iconify-icon>
+                                            <div className="absolute top-4 right-4 w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 scale-50 group-hover:scale-100 border border-white/30">
+                                                <iconify-icon icon="lucide:maximize" className="text-white text-xl"></iconify-icon>
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                </AnimatePresence>
+                            </motion.div>
+
+                            {/* Infinite Scroll Sentinel */}
+                            <div ref={loaderRef} className="flex justify-center pt-8 min-h-[100px]">
+                                {hasMore && (
+                                    <div className="flex flex-col items-center gap-4 py-8">
+                                        <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground animate-pulse">
+                                            Loading More Masterpieces...
+                                        </span>
                                     </div>
-                                </div>
-                            ))}
+                                )}
+                            </div>
                         </div>
                     ) : (
                         <div className="text-center py-20 bg-muted/30 rounded-2xl border-2 border-dashed border-border">
@@ -224,7 +312,7 @@ function Portfolio() {
                         </button>
 
                         <div className="w-full lg:w-3/5 bg-muted relative overflow-hidden">
-                            <img src={selectedProject.image} alt={selectedProject.title} className="w-full h-full object-cover" />
+                            <img src={selectedProject.image} alt={selectedProject.title} loading="lazy" className="w-full h-full object-cover" />
                         </div>
 
                         <div className="w-full lg:w-2/5 p-6 md:p-10 overflow-y-auto bg-card flex flex-col">
