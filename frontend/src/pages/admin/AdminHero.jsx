@@ -17,6 +17,15 @@ function AdminHero() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
 
+  // Helper to ensure media URL is absolute
+  const getImageUrl = (url) => {
+    if (!url) return '';
+    if (typeof url !== 'string') return '';
+    if (url.startsWith('http') || url.startsWith('blob:')) return url;
+    const baseUrl = import.meta.env.VITE_API_URL?.replace('/api/', '') || 'http://localhost:8000';
+    return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+  };
+
   useEffect(() => {
     if (settings) {
       setFormData({
@@ -26,11 +35,11 @@ function AdminHero() {
         hero_video: null,
         hero_background_image: null
       });
-      if (settings.hero_image_url) {
-        setPreviewImage(settings.hero_image_url);
+      if (settings.hero_background_image) {
+        setPreviewImage(getImageUrl(settings.hero_background_image));
       }
-      if (settings.hero_video_url) {
-        setPreviewVideo(settings.hero_video_url);
+      if (settings.hero_video) {
+        setPreviewVideo(getImageUrl(settings.hero_video));
       }
     }
   }, [settings]);
@@ -63,21 +72,26 @@ function AdminHero() {
     data.append('hero_subtitle', formData.hero_subtitle);
     data.append('hero_title', formData.hero_title);
     data.append('hero_description', formData.hero_description);
-    if (formData.hero_video) {
+    if (formData.hero_video instanceof File) {
       data.append('hero_video', formData.hero_video);
     }
-    if (formData.hero_background_image) {
+    if (formData.hero_background_image instanceof File) {
       data.append('hero_background_image', formData.hero_background_image);
     }
 
     try {
-      await api.patch('settings/', data);
+      const config = {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      };
+      await api.patch('settings/', data, config);
       await fetchSettings();
       setSuccess(true);
+      alert("Hero section updated successfully!");
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
-      const errorMsg = err.response?.data ? JSON.stringify(err.response.data) : 'Failed to update Hero section. Please try again.';
+      const errorMsg = err.response?.data ? JSON.stringify(err.response.data) : 'Failed to update Hero section. Check Cloudinary settings.';
       setError(errorMsg);
+      alert("Error: " + errorMsg);
       console.error(err);
     } finally {
       setLoading(false);
