@@ -13,7 +13,7 @@ function CategoryCard({ category }) {
   const getImageUrl = (url) => {
     if (!url) return '';
     if (url.startsWith('http')) return url;
-    const baseUrl = 'http://localhost:8000'; // Adjust if needed
+    const baseUrl = import.meta.env.VITE_API_URL?.replace('/api/', '') || 'http://localhost:8000';
     return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
   };
 
