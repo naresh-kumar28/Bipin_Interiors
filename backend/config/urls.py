@@ -20,9 +20,12 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from django.shortcuts import redirect
+from django.http import HttpResponse
 
 def home(request):
-    return redirect("https://bipin-interiors.vercel.app")
+    if not settings.DEBUG:
+        return redirect("https://bipin-interiors.vercel.app")
+    return HttpResponse("<h1>Bipin Interiors Backend</h1><p>Local Development Mode</p><a href='/admin/'>Admin Panel</a>")
 
 urlpatterns = [
     path('', home, name='home'),
