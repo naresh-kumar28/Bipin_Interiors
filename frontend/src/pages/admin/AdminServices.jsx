@@ -64,6 +64,15 @@ function AdminServices() {
     }
   };
 
+  // Helper to ensure image URL is absolute
+  const getImageUrl = (url) => {
+    if (!url) return '';
+    if (typeof url !== 'string') return '';
+    if (url.startsWith('http')) return url;
+    const baseUrl = import.meta.env.VITE_API_URL?.replace('/api/', '') || 'http://localhost:8000';
+    return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -102,8 +111,11 @@ function AdminServices() {
       setEditingService(null);
       setFormData({ title: '', description: '', features: '', icon: 'lucide:grid-3x3', image: null });
       fetchServices();
+      alert("Service saved successfully!");
     } catch (err) {
       console.error("Failed to save service", err);
+      const errorMsg = err.response?.data ? JSON.stringify(err.response.data) : "Failed to save service. Please check your connection or file size.";
+      alert(errorMsg);
     }
   };
 
@@ -124,8 +136,10 @@ function AdminServices() {
       try {
         await api.delete(`services/${id}/`);
         setServices(services.filter(s => s.id !== id));
+        alert("Service deleted successfully!");
       } catch (err) {
         console.error("Failed to delete service", err);
+        alert("Failed to delete service.");
       }
     }
   };
@@ -146,8 +160,7 @@ function AdminServices() {
     try {
       await api.patch('settings/', data);
       setIsSettingsModalOpen(false);
-      // We don't need a reload if we use context, but AdminServices uses local state for settings modal
-      // Let's just update the local state or reload for simplicity as before
+      alert("Settings saved successfully!");
       window.location.reload(); 
     } catch (err) {
       console.error("Failed to save service settings", err);
@@ -227,7 +240,7 @@ function AdminServices() {
                       </div>
                       <div className="w-14 h-10 rounded-lg bg-muted overflow-hidden border border-border shrink-0">
                         {service.image ? (
-                          <img src={service.image} className="w-full h-full object-cover" alt={service.title} />
+                          <img src={getImageUrl(service.image)} className="w-full h-full object-cover" alt={service.title} />
                         ) : (
                           <iconify-icon icon="lucide:image" class="text-xl text-muted-foreground"></iconify-icon>
                         )}

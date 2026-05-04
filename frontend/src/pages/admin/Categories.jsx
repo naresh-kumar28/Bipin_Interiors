@@ -52,6 +52,15 @@ function Categories() {
     }
   };
 
+  // Helper to ensure image URL is absolute
+  const getImageUrl = (url) => {
+    if (!url) return '';
+    if (typeof url !== 'string') return '';
+    if (url.startsWith('http')) return url;
+    const baseUrl = import.meta.env.VITE_API_URL?.replace('/api/', '') || 'http://localhost:8000';
+    return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+  };
+
   const handleOpenModal = (category = null) => {
     if (category) {
       setEditingCategory(category);
@@ -111,8 +120,11 @@ function Categories() {
         setCategories([response.data, ...categories]);
       }
       setIsModalOpen(false);
+      alert("Category saved successfully!");
     } catch (err) {
-      setError(err.response?.data?.name || "Failed to save category. Make sure the name is unique.");
+      const errorMsg = err.response?.data ? JSON.stringify(err.response.data) : "Failed to save category. Make sure the name is unique.";
+      setError(errorMsg);
+      alert(errorMsg);
     } finally {
       setIsSubmitting(false);
     }
@@ -123,6 +135,7 @@ function Categories() {
       try {
         await api.delete(`categories/${id}/`);
         setCategories(categories.filter(c => c.id !== id));
+        alert("Category deleted successfully!");
       } catch (err) {
         alert("Failed to delete category.");
       }
@@ -224,7 +237,7 @@ function Categories() {
               <div className="flex flex-col h-full">
                 <div className="w-full h-40 bg-muted rounded-xl overflow-hidden mb-4 transition-transform group-hover:scale-[1.02]">
                   {category.image ? (
-                    <img src={category.image} alt={category.name} className="w-full h-full object-cover" />
+                    <img src={getImageUrl(category.image)} alt={category.name} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-primary/30">
                       <iconify-icon icon="lucide:grid-3x3" class="text-4xl"></iconify-icon>

@@ -38,6 +38,15 @@ function AdminPortfolio() {
     }
   };
 
+  // Helper to ensure image URL is absolute
+  const getImageUrl = (url) => {
+    if (!url) return '';
+    if (typeof url !== 'string') return '';
+    if (url.startsWith('http')) return url;
+    const baseUrl = import.meta.env.VITE_API_URL?.replace('/api/', '') || 'http://localhost:8000';
+    return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+  };
+
   const handleOpenModal = (project = null) => {
     if (project) {
       setEditingProject(project);
@@ -100,8 +109,11 @@ function AdminPortfolio() {
         setProjects([response.data, ...projects]);
       }
       setIsModalOpen(false);
+      alert("Project saved successfully!");
     } catch (err) {
-      setError("Failed to save project. Please check all fields.");
+      const errorMsg = err.response?.data ? JSON.stringify(err.response.data) : "Failed to save project. Please check all fields.";
+      setError(errorMsg);
+      alert(errorMsg);
     } finally {
       setIsSubmitting(false);
     }
@@ -112,8 +124,10 @@ function AdminPortfolio() {
       try {
         await api.delete(`projects/${id}/`);
         setProjects(projects.filter(p => p.id !== id));
+        alert("Project deleted successfully!");
       } catch (err) {
         console.error("Failed to delete project", err);
+        alert("Failed to delete project.");
       }
     }
   };
@@ -181,7 +195,7 @@ function AdminPortfolio() {
           {filteredProjects.map((project) => (
             <div key={project.id} className="group bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-md transition-all relative">
               <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                <img src={project.image} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <img src={getImageUrl(project.image)} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
                   <button 
                     onClick={() => handleOpenModal(project)}
