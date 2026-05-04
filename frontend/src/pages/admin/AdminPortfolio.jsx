@@ -97,23 +97,23 @@ function AdminPortfolio() {
     }
 
     try {
+      const config = {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      };
+
       if (editingProject) {
-        const response = await api.put(`projects/${editingProject.id}/`, data, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        const response = await api.put(`projects/${editingProject.id}/`, data, config);
         setProjects(projects.map(p => p.id === editingProject.id ? response.data : p));
       } else {
-        const response = await api.post('projects/', data, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        const response = await api.post('projects/', data, config);
         setProjects([response.data, ...projects]);
       }
       setIsModalOpen(false);
-      alert("Project saved successfully!");
+      alert("Design saved successfully!");
     } catch (err) {
-      const errorMsg = err.response?.data ? JSON.stringify(err.response.data) : "Failed to save project. Please check all fields.";
+      const errorMsg = err.response?.data ? JSON.stringify(err.response.data) : "Failed to save design. Please try again.";
       setError(errorMsg);
-      alert(errorMsg);
+      alert("Error: " + errorMsg);
     } finally {
       setIsSubmitting(false);
     }

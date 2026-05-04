@@ -108,23 +108,23 @@ function Categories() {
     }
 
     try {
+      const config = {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      };
+
       if (editingCategory) {
-        const response = await api.put(`categories/${editingCategory.id}/`, data, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        const response = await api.put(`categories/${editingCategory.id}/`, data, config);
         setCategories(categories.map(c => c.id === editingCategory.id ? response.data : c));
       } else {
-        const response = await api.post('categories/', data, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        const response = await api.post('categories/', data, config);
         setCategories([response.data, ...categories]);
       }
       setIsModalOpen(false);
       alert("Category saved successfully!");
     } catch (err) {
-      const errorMsg = err.response?.data ? JSON.stringify(err.response.data) : "Failed to save category. Make sure the name is unique.";
+      const errorMsg = err.response?.data ? JSON.stringify(err.response.data) : "Failed to save category. Check Cloudinary settings.";
       setError(errorMsg);
-      alert(errorMsg);
+      alert("Error: " + errorMsg);
     } finally {
       setIsSubmitting(false);
     }

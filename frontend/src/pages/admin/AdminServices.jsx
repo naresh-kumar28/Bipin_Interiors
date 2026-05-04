@@ -102,10 +102,14 @@ function AdminServices() {
     }
 
     try {
+      const config = {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      };
+
       if (editingService) {
-        await api.patch(`services/${editingService.id}/`, data);
+        await api.patch(`services/${editingService.id}/`, data, config);
       } else {
-        await api.post('services/', data);
+        await api.post('services/', data, config);
       }
       setShowModal(false);
       setEditingService(null);
@@ -114,8 +118,8 @@ function AdminServices() {
       alert("Service saved successfully!");
     } catch (err) {
       console.error("Failed to save service", err);
-      const errorMsg = err.response?.data ? JSON.stringify(err.response.data) : "Failed to save service. Please check your connection or file size.";
-      alert(errorMsg);
+      const errorMsg = err.response?.data ? JSON.stringify(err.response.data) : "Failed to save service. Check Cloudinary settings or file size.";
+      alert("Error: " + errorMsg);
     }
   };
 
