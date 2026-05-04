@@ -19,7 +19,13 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+from django.http import JsonResponse
+
+def home(request):
+    return JsonResponse({"message": "Bipin Interiors API is Running", "status": "active"})
+
 urlpatterns = [
+    path('', home, name='home'),
     path('admin/', admin.site.urls),
     path('api/', include('core.urls')),
 ]
