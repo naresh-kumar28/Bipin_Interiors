@@ -167,11 +167,18 @@ function AdminAbout() {
                   <label className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Background Image</label>
                   <div className="relative aspect-video rounded-2xl border-2 border-dashed border-border overflow-hidden bg-muted flex items-center justify-center group">
                     {previews.about_hero_image ? (
-                      <img src={previews.about_hero_image} className="w-full h-full object-cover" />
+                      <>
+                        <img src={previews.about_hero_image} className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10">
+                           <label htmlFor="about-hero-image" className="cursor-pointer bg-white text-foreground px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider shadow-lg hover:bg-primary hover:text-white transition-all">Change Image</label>
+                        </div>
+                      </>
                     ) : (
-                      <iconify-icon icon="lucide:upload" class="text-3xl text-muted-foreground"></iconify-icon>
+                      <label htmlFor="about-hero-image" className="absolute inset-0 cursor-pointer flex items-center justify-center">
+                        <iconify-icon icon="lucide:upload" class="text-3xl text-muted-foreground"></iconify-icon>
+                      </label>
                     )}
-                    <input type="file" name="about_hero_image" onChange={handleFileChange} className="absolute inset-0 opacity-0 cursor-pointer" />
+                    <input id="about-hero-image" type="file" name="about_hero_image" onChange={handleFileChange} className="hidden" />
                   </div>
                 </div>
               </div>
@@ -213,11 +220,18 @@ function AdminAbout() {
                   <label className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Side Image</label>
                   <div className="relative aspect-[4/5] rounded-2xl border-2 border-dashed border-border overflow-hidden bg-muted flex items-center justify-center group">
                     {previews.about_story_image ? (
-                      <img src={previews.about_story_image} className="w-full h-full object-cover" />
+                      <>
+                        <img src={previews.about_story_image} className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10">
+                           <label htmlFor="about-story-image" className="cursor-pointer bg-white text-foreground px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider shadow-lg hover:bg-primary hover:text-white transition-all">Change Image</label>
+                        </div>
+                      </>
                     ) : (
-                      <iconify-icon icon="lucide:upload" class="text-3xl text-muted-foreground"></iconify-icon>
+                      <label htmlFor="about-story-image" className="absolute inset-0 cursor-pointer flex items-center justify-center">
+                        <iconify-icon icon="lucide:upload" class="text-3xl text-muted-foreground"></iconify-icon>
+                      </label>
                     )}
-                    <input type="file" name="about_story_image" onChange={handleFileChange} className="absolute inset-0 opacity-0 cursor-pointer" />
+                    <input id="about-story-image" type="file" name="about_story_image" onChange={handleFileChange} className="hidden" />
                   </div>
                 </div>
               </div>
@@ -279,22 +293,36 @@ function AdminAbout() {
                     <label className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center">Image 1</label>
                     <div className="relative aspect-square rounded-xl border-2 border-dashed border-border overflow-hidden bg-muted flex items-center justify-center group">
                       {previews.about_expertise_image1 ? (
-                        <img src={previews.about_expertise_image1} className="w-full h-full object-cover" />
+                        <>
+                          <img src={previews.about_expertise_image1} className="w-full h-full object-cover" />
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10">
+                             <label htmlFor="about-exp-image1" className="cursor-pointer bg-white text-foreground px-4 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-wider shadow-lg hover:bg-primary hover:text-white transition-all">Change</label>
+                          </div>
+                        </>
                       ) : (
-                        <iconify-icon icon="lucide:upload" class="text-2xl text-muted-foreground"></iconify-icon>
+                        <label htmlFor="about-exp-image1" className="absolute inset-0 cursor-pointer flex items-center justify-center">
+                          <iconify-icon icon="lucide:upload" class="text-2xl text-muted-foreground"></iconify-icon>
+                        </label>
                       )}
-                      <input type="file" name="about_expertise_image1" onChange={handleFileChange} className="absolute inset-0 opacity-0 cursor-pointer" />
+                      <input id="about-exp-image1" type="file" name="about_expertise_image1" onChange={handleFileChange} className="hidden" />
                     </div>
                   </div>
                   <div className="space-y-2">
                     <label className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center">Image 2</label>
-                    <div className="relative aspect-square rounded-xl border-2 border-dashed border-border overflow-hidden bg-muted flex items-center justify-center group (translate-y-4)">
+                    <div className="relative aspect-square rounded-xl border-2 border-dashed border-border overflow-hidden bg-muted flex items-center justify-center group">
                       {previews.about_expertise_image2 ? (
-                        <img src={previews.about_expertise_image2} className="w-full h-full object-cover" />
+                        <>
+                          <img src={previews.about_expertise_image2} className="w-full h-full object-cover" />
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10">
+                             <label htmlFor="about-exp-image2" className="cursor-pointer bg-white text-foreground px-4 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-wider shadow-lg hover:bg-primary hover:text-white transition-all">Change</label>
+                          </div>
+                        </>
                       ) : (
-                        <iconify-icon icon="lucide:upload" class="text-2xl text-muted-foreground"></iconify-icon>
+                        <label htmlFor="about-exp-image2" className="absolute inset-0 cursor-pointer flex items-center justify-center">
+                          <iconify-icon icon="lucide:upload" class="text-2xl text-muted-foreground"></iconify-icon>
+                        </label>
                       )}
-                      <input type="file" name="about_expertise_image2" onChange={handleFileChange} className="absolute inset-0 opacity-0 cursor-pointer" />
+                      <input id="about-exp-image2" type="file" name="about_expertise_image2" onChange={handleFileChange} className="hidden" />
                     </div>
                   </div>
                 </div>

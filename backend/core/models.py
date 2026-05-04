@@ -191,6 +191,12 @@ class SiteSetting(models.Model):
     service_hero_description = models.TextField(blank=True, default='Discover our range of premium Decor services, from precision false ceilings to elegant wall paneling.')
     service_hero_image = models.ImageField(upload_to='services_hero/', blank=True, null=True)
 
+    # Portfolio Page Content
+    portfolio_hero_subtitle = models.CharField(max_length=200, default='Our Masterpieces')
+    portfolio_hero_title = models.CharField(max_length=200, default='Work Gallery')
+    portfolio_hero_description = models.TextField(blank=True, default='Explore our curated portfolio of stunning transformations and bespoke installations.')
+    portfolio_hero_image = models.ImageField(upload_to='portfolio_hero/', blank=True, null=True)
+
     # Section Titles
     category_section_subtitle = models.CharField(max_length=200, default='Explore Spaces')
     category_section_title = models.CharField(max_length=200, default='Design by Category')

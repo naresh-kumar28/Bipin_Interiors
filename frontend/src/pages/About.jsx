@@ -1,7 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { aboutHero, mirror, labour, worker } from '../assets/images'
 import { useSiteSettings } from '../context/SiteContext'
 import SEO from '../components/common/SEO'
 
@@ -37,7 +36,7 @@ function About() {
                     initial={{ scale: 1.1, opacity: 0 }}
                     animate={{ scale: 1, opacity: 0.1 }}
                     transition={{ duration: 1.5 }}
-                    style={{ backgroundImage: `url(${settings?.about_hero_image_url || aboutHero})` }}
+                    style={{ backgroundImage: `url(${settings?.about_hero_image_url || "https://placehold.co/1920x600/1a1a1a/C5A059?text=About+Our+Story"})` }}
                     className="absolute inset-0 bg-cover bg-center">
                 </motion.div>
                 <div className="max-w-3xl mx-auto relative z-10">
@@ -115,7 +114,7 @@ function About() {
                         className="w-full lg:w-1/2 relative"
                     >
                         <div className="aspect-[4/5] overflow-hidden rounded-sm bg-muted shadow-lg ring-1 ring-border/50">
-                            <img src={settings?.about_story_image_url || mirror}
+                            <img src={settings?.about_story_image_url || "https://placehold.co/800x1000/1a1a1a/C5A059?text=Our+Legacy"}
                                 alt="Decor Design Studio" className="w-full h-full object-cover transition-transform duration-700 hover:scale-110" />
                         </div>
                     </motion.div>
@@ -206,11 +205,11 @@ function About() {
                     >
                         <div className="grid grid-cols-2 gap-4">
                             <div className="aspect-square overflow-hidden rounded-sm bg-muted shadow-sm ring-1 ring-border/50">
-                                <img src={settings?.about_expertise_image1_url || labour}
+                                <img src={settings?.about_expertise_image1_url || "https://placehold.co/600x600/1a1a1a/C5A059?text=Craftsmanship+1"}
                                     alt="Craftsman at work" className="w-full h-full object-cover transition-transform duration-700 hover:scale-110" />
                             </div>
                             <div className="aspect-square overflow-hidden rounded-sm bg-muted shadow-sm translate-y-8 ring-1 ring-border/50">
-                                <img src={settings?.about_expertise_image2_url || worker}
+                                <img src={settings?.about_expertise_image2_url || "https://placehold.co/600x600/1a1a1a/C5A059?text=Craftsmanship+2"}
                                     alt="Precision tools" className="w-full h-full object-cover transition-transform duration-700 hover:scale-110" />
                             </div>
                         </div>

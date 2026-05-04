@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import api from '../api/api'
-import { servicesHero, transformSpace } from '../assets/images'
 import BookingModal from '../components/BookingModal'
 import { useSiteSettings } from '../context/SiteContext'
 
@@ -84,7 +83,7 @@ function Services() {
                     initial={{ scale: 1.1, opacity: 0 }}
                     animate={{ scale: 1, opacity: 0.1 }}
                     transition={{ duration: 1.5 }}
-                    style={{ backgroundImage: `url(${settings?.service_hero_image_url || servicesHero})` }}
+                    style={{ backgroundImage: `url(${settings?.service_hero_image_url || "https://placehold.co/1920x600/1a1a1a/C5A059?text=Expert+Solutions"})` }}
                     className="absolute inset-0 bg-cover bg-center">
                 </motion.div>
                 <div className="max-w-3xl mx-auto relative z-10">
@@ -279,7 +278,7 @@ function Services() {
             {/* CTA Section */}
             <section className="py-24 px-6 bg-slate-900 text-white text-center relative overflow-hidden">
                 <div
-                    style={{ backgroundImage: `url(${settings?.cta_image_url || transformSpace})` }}
+                    style={{ backgroundImage: `url(${settings?.cta_image_url || "https://placehold.co/1920x600/1a1a1a/C5A059?text=Transform+Your+Space"})` }}
                     className="absolute inset-0 opacity-10 bg-cover bg-center">
                 </div>
 

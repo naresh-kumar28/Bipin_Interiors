@@ -2,9 +2,10 @@ import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import api from '../api/api'
-import { portfolioHero } from '../assets/images'
+import { useSiteSettings } from '../context/SiteContext'
 
 function Portfolio() {
+    const { settings } = useSiteSettings();
     const [searchParams, setSearchParams] = useSearchParams();
     const activeCategory = searchParams.get('category') || 'all';
 
@@ -74,26 +75,11 @@ function Portfolio() {
     const hasMore = currentPage * ITEMS_PER_PAGE < filteredProjects.length;
     const currentProjects = filteredProjects.slice(0, currentPage * ITEMS_PER_PAGE);
 
-    const handleObserver = useCallback((entries) => {
-        const target = entries[0];
-        if (target.isIntersecting && hasMore) {
+    const handleLoadMore = () => {
+        if (hasMore) {
             setCurrentPage((prev) => prev + 1);
         }
-    }, [hasMore]);
-
-    useEffect(() => {
-        const option = {
-            root: null,
-            rootMargin: "20px",
-            threshold: 0
-        };
-        const observer = new IntersectionObserver(handleObserver, option);
-        if (loaderRef.current) observer.observe(loaderRef.current);
-        
-        return () => {
-            if (loaderRef.current) observer.unobserve(loaderRef.current);
-        };
-    }, [handleObserver]);
+    };
 
     const handleRate = async (projectId, rating) => {
         try {
@@ -166,7 +152,7 @@ function Portfolio() {
             {/* Page Header */}
             <section className="py-24 px-6 bg-slate-900 text-white text-center relative overflow-hidden">
                 <div
-                    style={{ backgroundImage: `url(${portfolioHero})` }}
+                    style={{ backgroundImage: `url(${settings?.portfolio_hero_image_url || "https://placehold.co/1920x600/1a1a1a/C5A059?text=Our+Portfolio"})` }}
                     className="absolute inset-0 opacity-10 bg-cover bg-center">
                 </div>
                 <div className="max-w-3xl mx-auto relative z-10">
@@ -177,7 +163,7 @@ function Portfolio() {
                         transition={{ duration: 0.6 }}
                         className="text-primary text-sm font-bold uppercase tracking-widest mb-4 block"
                     >
-                        Our Masterpieces
+                        {settings?.portfolio_hero_subtitle || 'Our Masterpieces'}
                     </motion.span>
                     <motion.h1 
                         initial={{ opacity: 0, y: 20 }}
@@ -186,7 +172,7 @@ function Portfolio() {
                         transition={{ duration: 0.6, delay: 0.1 }}
                         className="text-4xl md:text-6xl font-heading font-bold mb-6"
                     >
-                        Work Gallery
+                        {settings?.portfolio_hero_title || 'Work Gallery'}
                     </motion.h1>
                     <motion.p 
                         initial={{ opacity: 0, y: 20 }}
@@ -195,7 +181,7 @@ function Portfolio() {
                         transition={{ duration: 0.6, delay: 0.2 }}
                         className="text-lg text-white/80 font-light max-w-xl mx-auto"
                     >
-                        Explore our curated portfolio of stunning transformations and bespoke installations.
+                        {settings?.portfolio_hero_description || 'Explore our curated portfolio of stunning transformations and bespoke installations.'}
                     </motion.p>
                 </div>
             </section>
@@ -285,17 +271,20 @@ function Portfolio() {
                                 </AnimatePresence>
                             </motion.div>
 
-                            {/* Infinite Scroll Sentinel */}
-                            <div ref={loaderRef} className="flex justify-center pt-8 min-h-[100px]">
-                                {hasMore && (
-                                    <div className="flex flex-col items-center gap-4 py-8">
-                                        <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-                                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground animate-pulse">
-                                            Loading More Masterpieces...
+                            {/* Load More Button */}
+                            {hasMore && (
+                                <div className="flex justify-center pt-12 pb-8">
+                                    <button
+                                        onClick={handleLoadMore}
+                                        className="group relative px-12 py-4 bg-transparent border-2 border-primary text-primary font-bold uppercase tracking-widest text-xs rounded-full overflow-hidden transition-all hover:bg-primary hover:text-primary-foreground shadow-lg hover:shadow-primary/20"
+                                    >
+                                        <span className="relative z-10 flex items-center gap-2">
+                                            Load More Masterpieces
+                                            <iconify-icon icon="lucide:chevron-down" class="text-lg group-hover:translate-y-1 transition-transform"></iconify-icon>
                                         </span>
-                                    </div>
-                                )}
-                            </div>
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     ) : (
                         <div className="text-center py-20 bg-muted/30 rounded-2xl border-2 border-dashed border-border">

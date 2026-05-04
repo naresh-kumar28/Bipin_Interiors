@@ -18,6 +18,7 @@ import AdminCTA from '../pages/admin/AdminCTA';
 import AdminHero from '../pages/admin/AdminHero';
 import AdminAbout from '../pages/admin/AdminAbout';
 import AdminContact from '../pages/admin/AdminContact';
+import AdminPortfolioHero from '../pages/admin/AdminPortfolioHero';
 
 const AdminRoutes = () => {
   return (
@@ -38,6 +39,7 @@ const AdminRoutes = () => {
           <Route path="pages/hero" element={<AdminHero />} />
           <Route path="pages/about" element={<AdminAbout />} />
           <Route path="pages/contact" element={<AdminContact />} />
+          <Route path="pages/portfolio" element={<AdminPortfolioHero />} />
           <Route path="pages/why-choose-us" element={<AdminWhyChooseUs />} />
           <Route path="pages/our-process" element={<AdminOurProcess />} />
           <Route path="pages/testimonials" element={<AdminTestimonials />} />

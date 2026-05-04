@@ -154,11 +154,20 @@ function AdminContact() {
             <div className="p-6">
               <div className="relative aspect-video rounded-xl border-2 border-dashed border-border overflow-hidden bg-muted flex items-center justify-center group">
                 {previewImage ? (
-                  <img src={previewImage} className="w-full h-full object-cover" />
+                  <>
+                    <img src={previewImage} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10">
+                       <label htmlFor="contact-hero-image" className="cursor-pointer bg-white text-foreground px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider shadow-lg hover:bg-primary hover:text-white transition-all">
+                          Change Image
+                       </label>
+                    </div>
+                  </>
                 ) : (
-                  <iconify-icon icon="lucide:upload" class="text-3xl text-muted-foreground"></iconify-icon>
+                  <label htmlFor="contact-hero-image" className="absolute inset-0 cursor-pointer flex flex-col items-center justify-center gap-2 hover:bg-primary/5 transition-colors">
+                    <iconify-icon icon="lucide:upload" class="text-3xl text-muted-foreground"></iconify-icon>
+                  </label>
                 )}
-                <input type="file" onChange={handleFileChange} className="absolute inset-0 opacity-0 cursor-pointer" />
+                <input id="contact-hero-image" type="file" onChange={handleFileChange} className="hidden" />
               </div>
               <p className="text-[10px] text-muted-foreground mt-3 italic text-center">* Recommended size: 1920x1080px</p>
             </div>

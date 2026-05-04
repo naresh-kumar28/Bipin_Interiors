@@ -33,6 +33,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         { name: 'Hero Section', icon: 'lucide:layout', path: '/admin/pages/hero' },
         { name: 'About Page', icon: 'lucide:info', path: '/admin/pages/about' },
         { name: 'Contact Page', icon: 'lucide:phone', path: '/admin/pages/contact' },
+        { name: 'Portfolio Page', icon: 'lucide:image', path: '/admin/pages/portfolio' },
         { name: 'Why Choose Us', icon: 'lucide:check-circle', path: '/admin/pages/why-choose-us' },
         { name: 'Our Process', icon: 'lucide:git-branch', path: '/admin/pages/our-process' },
         { name: 'Client Stories', icon: 'lucide:message-square-heart', path: '/admin/pages/testimonials' },

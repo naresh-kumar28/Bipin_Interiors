@@ -440,7 +440,12 @@ function AdminServices() {
                       <label className="block text-[10px] font-bold text-muted-foreground mb-1.5 uppercase tracking-widest text-center">Hero Background</label>
                       <div className="relative aspect-video rounded-xl border-2 border-dashed border-border overflow-hidden bg-muted flex items-center justify-center group">
                         {heroPreview ? (
-                          <img src={heroPreview} className="w-full h-full object-cover" />
+                          <>
+                            <img src={heroPreview} className="w-full h-full object-cover" />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                               <span className="bg-white text-foreground px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider shadow-lg">Change Image</span>
+                            </div>
+                          </>
                         ) : (
                           <iconify-icon icon="lucide:upload" class="text-3xl text-muted-foreground"></iconify-icon>
                         )}

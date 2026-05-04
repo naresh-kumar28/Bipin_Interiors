@@ -307,11 +307,14 @@ function AdminWhyChooseUs() {
                     </label>
                   </div>
                   {imagePreview && (
-                    <div className="relative shrink-0">
+                    <div className="relative shrink-0 group">
                       <img src={imagePreview} alt="Preview" className="w-24 h-24 rounded-xl object-cover border border-border" />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none rounded-xl">
+                         <span className="bg-white text-foreground px-2 py-1 rounded-lg text-[8px] font-bold uppercase tracking-wider shadow-lg">Change</span>
+                      </div>
                       <button type="button"
                         onClick={() => { setImageFile(null); setImagePreview(settings.why_choose_image_url || null); }}
-                        className="absolute -top-2 -right-2 w-5 h-5 bg-destructive text-white rounded-full flex items-center justify-center text-[10px]">
+                        className="absolute -top-2 -right-2 w-5 h-5 bg-destructive text-white rounded-full flex items-center justify-center text-[10px] z-10">
                         <iconify-icon icon="lucide:x"></iconify-icon>
                       </button>
                     </div>

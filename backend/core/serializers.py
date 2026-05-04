@@ -115,6 +115,7 @@ class SiteSettingSerializer(serializers.ModelSerializer):
     about_expertise_image2_url = serializers.SerializerMethodField()
     contact_hero_image_url = serializers.SerializerMethodField()
     service_hero_image_url = serializers.SerializerMethodField()
+    portfolio_hero_image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = SiteSetting
@@ -198,6 +199,14 @@ class SiteSettingSerializer(serializers.ModelSerializer):
             if request:
                 return request.build_absolute_uri(obj.service_hero_image.url)
             return obj.service_hero_image.url
+        return None
+
+    def get_portfolio_hero_image_url(self, obj):
+        if obj.portfolio_hero_image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.portfolio_hero_image.url)
+            return obj.portfolio_hero_image.url
         return None
 
 class WhyChooseUsSerializer(serializers.ModelSerializer):

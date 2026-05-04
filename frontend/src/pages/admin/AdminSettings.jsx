@@ -201,9 +201,14 @@ function AdminSettings() {
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">Logo Upload</label>
                     <label className="border-2 border-dashed border-border rounded-lg p-6 flex flex-col items-center justify-center bg-muted/30 hover:bg-muted/50 transition-colors cursor-pointer group relative overflow-hidden h-32">
-                      <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileChange(e, 'logo')} />
+                      <input id="logo-upload" type="file" className="hidden" accept="image/*" onChange={(e) => handleFileChange(e, 'logo')} />
                       {logoPreview ? (
-                        <img src={logoPreview} alt="Logo" className="absolute inset-0 w-full h-full object-contain p-2" />
+                        <>
+                          <img src={logoPreview} alt="Logo" className="absolute inset-0 w-full h-full object-contain p-2" />
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10">
+                             <label htmlFor="logo-upload" className="cursor-pointer bg-white text-foreground px-3 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-wider shadow-lg hover:bg-primary hover:text-white transition-all">Change Logo</label>
+                          </div>
+                        </>
                       ) : (
                         <>
                           <div className="w-10 h-10 rounded-full bg-background flex items-center justify-center text-primary mb-2 shadow-sm group-hover:scale-110 transition-transform">
@@ -217,9 +222,14 @@ function AdminSettings() {
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">Favicon Upload</label>
                     <label className="border-2 border-dashed border-border rounded-lg p-6 flex flex-col items-center justify-center bg-muted/30 hover:bg-muted/50 transition-colors cursor-pointer group relative overflow-hidden h-32">
-                      <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileChange(e, 'favicon')} />
+                      <input id="favicon-upload" type="file" className="hidden" accept="image/*" onChange={(e) => handleFileChange(e, 'favicon')} />
                       {faviconPreview ? (
-                        <img src={faviconPreview} alt="Favicon" className="absolute inset-0 w-full h-full object-contain p-2" />
+                        <>
+                          <img src={faviconPreview} alt="Favicon" className="absolute inset-0 w-full h-full object-contain p-2" />
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10">
+                             <label htmlFor="favicon-upload" className="cursor-pointer bg-white text-foreground px-3 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-wider shadow-lg hover:bg-primary hover:text-white transition-all">Change Icon</label>
+                          </div>
+                        </>
                       ) : (
                         <>
                           <div className="w-10 h-10 rounded-full bg-background flex items-center justify-center text-primary mb-2 shadow-sm group-hover:scale-110 transition-transform">

@@ -14,10 +14,6 @@ import BookingModal from '../components/BookingModal';
 import { useSiteSettings } from '../context/SiteContext';
 import SEO from '../components/common/SEO';
 
-import {
-    craftsmanship, transformSpace
-} from "../assets/images";
-import heroVideo from "../assets/video.mp4";
 
 function Home() {
     const { settings } = useSiteSettings();
@@ -104,9 +100,11 @@ function Home() {
                         muted
                         loop
                         playsInline
-                        poster={settings?.hero_image_url || craftsmanship}
+                        poster={settings?.hero_image_url || "https://placehold.co/1920x1080/1a1a1a/C5A059?text=Bipin+Interior"}
                     >
-                        <source src={settings?.hero_video_url || heroVideo} type="video/mp4" />
+                        {settings?.hero_video_url && (
+                            <source src={settings.hero_video_url} type="video/mp4" />
+                        )}
                     </motion.video>
                 </div>
 
@@ -288,7 +286,7 @@ function Home() {
                     >
                         <div className="relative aspect-[4/3] lg:aspect-square overflow-hidden rounded-2xl shadow-xl transition-transform duration-700 group-hover:scale-[1.02]">
                             <img
-                                src={settings?.why_choose_image_url || craftsmanship}
+                                src={settings?.why_choose_image_url || "https://placehold.co/1200x1200/1a1a1a/C5A059?text=Our+Craftsmanship"}
                                 alt="Craftsmanship"
                                 loading="lazy"
                                 className="w-full h-full object-cover" />
@@ -496,7 +494,7 @@ function Home() {
                     whileInView={{ scale: 1, opacity: 0.1 }}
                     viewport={{ once: true }}
                     transition={{ duration: 1.5 }}
-                    style={{ backgroundImage: `url(${settings?.cta_image_url || transformSpace})` }}
+                    style={{ backgroundImage: `url(${settings?.cta_image_url || "https://placehold.co/1920x600/1a1a1a/C5A059?text=Ready+to+Transform?"})` }}
                     className="absolute inset-0 bg-cover bg-center">
                 </motion.div>
 
