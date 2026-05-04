@@ -60,7 +60,9 @@ const AdminLayout = ({ children, title }) => {
               <div className="h-8 w-px bg-border hidden xs:block"></div>
               
               <div className="flex items-center gap-3 cursor-pointer group relative">
-                <img src="https://randomuser.me/api/portraits/men/12.jpg" alt="Admin" className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 border-primary/20" />
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center text-primary font-bold text-sm sm:text-base uppercase">
+                  {(user?.first_name || user?.username || 'A').charAt(0)}
+                </div>
                 <div className="hidden md:block text-sm">
                   <p className="font-medium text-foreground leading-none">{user?.first_name ? `${user.first_name} ${user.last_name || ''}` : user?.username || 'Admin'}</p>
                   <p className="text-muted-foreground text-xs mt-1">{user?.is_superuser ? 'Super Admin' : 'Staff'}</p>

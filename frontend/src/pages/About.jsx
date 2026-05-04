@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { aboutHero, mirror, labour, worker } from '../assets/images'
 import { useSiteSettings } from '../context/SiteContext'
+import SEO from '../components/common/SEO'
 
 function About() {
     const { settings } = useSiteSettings();
@@ -25,6 +26,10 @@ function About() {
 
     return (
         <main className="flex-grow flex flex-col w-full overflow-x-hidden">
+            <SEO 
+                title={`About Us | ${settings?.website_name || 'Bipin Interior'}`}
+                description="Learn more about Bipin Interior and our legacy of design excellence."
+            />
 
             {/* Page Header */}
             <section className="py-24 px-6 bg-slate-900 text-white text-center relative overflow-hidden">

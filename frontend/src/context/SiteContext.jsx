@@ -13,31 +13,10 @@ export const SiteProvider = ({ children }) => {
     try {
       const response = await api.get('settings/');
       setSettings(response.data);
-      
+      console.log(response.data);
       // Apply primary color to root CSS variable
       if (response.data.primary_color) {
         document.documentElement.style.setProperty('--primary', response.data.primary_color);
-      }
-
-      // Apply SEO Settings dynamically
-      if (response.data.seo_title) {
-        document.title = response.data.seo_title;
-      }
-      
-      const metaDesc = document.querySelector('meta[name="description"]');
-      if (metaDesc && response.data.seo_description) {
-        metaDesc.setAttribute("content", response.data.seo_description);
-      }
-
-      // Apply Favicon
-      if (response.data.favicon) {
-        let link = document.querySelector("link[rel~='icon']");
-        if (!link) {
-          link = document.createElement('link');
-          link.rel = 'icon';
-          document.head.appendChild(link);
-        }
-        link.href = response.data.favicon;
       }
 
     } catch (err) {

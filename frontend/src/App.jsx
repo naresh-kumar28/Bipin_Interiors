@@ -3,6 +3,7 @@ import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
 import FloatingWhatsApp from './components/layout/FloatingWhatsApp'
 import AppRoutes from './routes/AppRoutes'
+import SEO from './components/common/SEO'
 
 function App() {
   const location = useLocation();
@@ -15,6 +16,7 @@ function App() {
 
   return (
     <>
+      <SEO />
       {!hideLayout && <Navbar />}
       <main className={!hideLayout ? "min-h-screen" : ""}>
         <AppRoutes />

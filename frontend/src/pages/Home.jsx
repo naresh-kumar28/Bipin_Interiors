@@ -12,6 +12,7 @@ import api from '../api/api';
 import CategoryCard from '../components/CategoryCard';
 import BookingModal from '../components/BookingModal';
 import { useSiteSettings } from '../context/SiteContext';
+import SEO from '../components/common/SEO';
 
 import {
     craftsmanship, transformSpace
@@ -85,6 +86,7 @@ function Home() {
 
     return (
         <main className="flex-grow flex flex-col w-full overflow-x-hidden">
+            <SEO />
 
             {/* Hero Section */}
             <section
