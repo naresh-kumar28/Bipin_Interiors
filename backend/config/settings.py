@@ -36,12 +36,12 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'bipin-decor.onrender.com,localhost,1
 # Application definition
 
 INSTALLED_APPS = [
+    'cloudinary_storage',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'cloudinary_storage',
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
     'cloudinary',
